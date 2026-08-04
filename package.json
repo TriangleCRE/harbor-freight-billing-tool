@@ -1,0 +1,16 @@
+{
+  "name": "harbor-freight-billing-tool",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Harbor Freight Center billing tool, gated behind a shared passcode.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
