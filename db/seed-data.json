@@ -1,0 +1,896 @@
+{
+  "tenants": [
+    {
+      "id": "harborfreight",
+      "name": "Harbor Freight Tools #527",
+      "meterLabel": "Suite 106 / Unit 106",
+      "sqft": 15922,
+      "fmPct": 0.6122,
+      "leaseFrom": "2014-11-11",
+      "leaseTo": "2034-11-30",
+      "billedFrom": null,
+      "requireExplicitStart": false,
+      "meterUnconfirmed": false,
+      "logoKey": "harborfreight"
+    },
+    {
+      "id": "geico",
+      "name": "GEICO (John Edwards)",
+      "meterLabel": "Suite 102 / Unit 102",
+      "sqft": 1300,
+      "fmPct": 0.077,
+      "leaseFrom": "2016-09-01",
+      "leaseTo": null,
+      "billedFrom": null,
+      "requireExplicitStart": false,
+      "meterUnconfirmed": false,
+      "logoKey": "geico"
+    },
+    {
+      "id": "ezmassage",
+      "name": "EZ Massage",
+      "meterLabel": "Suite 103 / Unit 103",
+      "sqft": 750,
+      "fmPct": 0.03,
+      "leaseFrom": "2021-08-01",
+      "leaseTo": "2027-07-31",
+      "billedFrom": null,
+      "requireExplicitStart": false,
+      "meterUnconfirmed": false,
+      "logoKey": "ezmassage"
+    },
+    {
+      "id": "libertyarms",
+      "name": "Liberty Arms",
+      "meterLabel": "Suite 104 / Unit 104",
+      "sqft": 1800,
+      "fmPct": 0.1507,
+      "leaseFrom": "2018-11-21",
+      "leaseTo": "2026-11-30",
+      "billedFrom": null,
+      "requireExplicitStart": false,
+      "meterUnconfirmed": false,
+      "logoKey": "libertyarms"
+    },
+    {
+      "id": "secretlair",
+      "name": "Secret Lair Comics 2.0, LLC",
+      "meterLabel": "Suite 105 / Unit 105",
+      "sqft": 1650,
+      "fmPct": 0.063,
+      "leaseFrom": "2020-08-12",
+      "leaseTo": "2030-08-31",
+      "billedFrom": null,
+      "requireExplicitStart": false,
+      "meterUnconfirmed": false,
+      "logoKey": "secretlair"
+    },
+    {
+      "id": "ataka",
+      "name": "Ataka Industries, LLC",
+      "meterLabel": "Suite 101 / Unit 101 (utility closet meter — unconfirmed)",
+      "sqft": 4000,
+      "fmPct": 0.0671,
+      "leaseFrom": "2024-04-15",
+      "leaseTo": "2029-04-30",
+      "billedFrom": null,
+      "requireExplicitStart": true,
+      "meterUnconfirmed": true,
+      "logoKey": "ataka"
+    }
+  ],
+  "bills": [
+    {
+      "id": "bill_20250121",
+      "periodStart": "2024-12-20",
+      "periodEnd": "2025-01-21",
+      "invoiceDate": "2025-01-29",
+      "dueDate": "2025-02-24",
+      "water": {
+        "city": 31.58,
+        "tax": 6.32,
+        "sewer": 20.55,
+        "authority": 27.23,
+        "solidWaste": 33,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 12.63,
+        "tax": 2.53
+      },
+      "masterUsage": 5000,
+      "usage": {
+        "ataka": 30,
+        "geico": 779,
+        "ezmassage": 1711,
+        "libertyarms": 530,
+        "secretlair": 527,
+        "harborfreight": 3876
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2024-12-20",
+        "toDate": "2025-01-21"
+      }
+    },
+    {
+      "id": "bill_20250220",
+      "periodStart": "2025-01-21",
+      "periodEnd": "2025-02-20",
+      "invoiceDate": "2025-02-26",
+      "dueDate": "2025-03-24",
+      "water": {
+        "city": 31.58,
+        "tax": 6.32,
+        "sewer": 20.55,
+        "authority": 27.23,
+        "solidWaste": 33,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 12.63,
+        "tax": 2.53
+      },
+      "masterUsage": 6000,
+      "usage": {
+        "ataka": 97,
+        "geico": 766,
+        "ezmassage": 1633,
+        "libertyarms": 624,
+        "secretlair": 528,
+        "harborfreight": 3425
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-01-21",
+        "toDate": "2025-02-20"
+      }
+    },
+    {
+      "id": "bill_20250320",
+      "periodStart": "2025-02-20",
+      "periodEnd": "2025-03-20",
+      "invoiceDate": "2025-03-31",
+      "dueDate": "2025-04-22",
+      "water": {
+        "city": 31.58,
+        "tax": 6.32,
+        "sewer": 20.55,
+        "authority": 27.23,
+        "solidWaste": 33,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 12.63,
+        "tax": 2.53
+      },
+      "masterUsage": 5000,
+      "usage": {
+        "ataka": 34,
+        "geico": 722,
+        "ezmassage": 1540,
+        "libertyarms": 541,
+        "secretlair": 587,
+        "harborfreight": 3017
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-02-20",
+        "toDate": "2025-03-20"
+      }
+    },
+    {
+      "id": "bill_20250421",
+      "periodStart": "2025-03-20",
+      "periodEnd": "2025-04-21",
+      "invoiceDate": "2025-04-30",
+      "dueDate": "2025-05-22",
+      "water": {
+        "city": 31.58,
+        "tax": 6.32,
+        "sewer": 20.55,
+        "authority": 27.23,
+        "solidWaste": 33,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 12.63,
+        "tax": 2.53
+      },
+      "masterUsage": 6000,
+      "usage": {
+        "ataka": 81,
+        "geico": 981,
+        "ezmassage": 1664,
+        "libertyarms": 605,
+        "secretlair": 640,
+        "harborfreight": 3585
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-03-20",
+        "toDate": "2025-04-21"
+      }
+    },
+    {
+      "id": "bill_20250520",
+      "periodStart": "2025-04-21",
+      "periodEnd": "2025-05-20",
+      "invoiceDate": "2025-05-29",
+      "dueDate": "2025-06-23",
+      "water": {
+        "city": 31.58,
+        "tax": 6.32,
+        "sewer": 20.55,
+        "authority": 27.23,
+        "solidWaste": 33,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 12.63,
+        "tax": 2.53
+      },
+      "masterUsage": 5000,
+      "usage": {
+        "ataka": 66,
+        "geico": 1349,
+        "ezmassage": 1461,
+        "libertyarms": 542,
+        "secretlair": 557,
+        "harborfreight": 3274
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-04-21",
+        "toDate": "2025-05-20"
+      }
+    },
+    {
+      "id": "bill_20250620",
+      "periodStart": "2025-05-20",
+      "periodEnd": "2025-06-20",
+      "invoiceDate": "2025-06-26",
+      "dueDate": "2025-07-22",
+      "water": {
+        "city": 31.58,
+        "tax": 6.32,
+        "sewer": 20.55,
+        "authority": 27.23,
+        "solidWaste": 33,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 12.63,
+        "tax": 2.53
+      },
+      "masterUsage": 7000,
+      "usage": {
+        "ataka": 30,
+        "geico": 1956,
+        "ezmassage": 1672,
+        "libertyarms": 696,
+        "secretlair": 629,
+        "harborfreight": 4706
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-05-20",
+        "toDate": "2025-06-20"
+      }
+    },
+    {
+      "id": "bill_20250722",
+      "periodStart": "2025-06-20",
+      "periodEnd": "2025-07-22",
+      "invoiceDate": "2025-07-30",
+      "dueDate": "2025-08-22",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 1.25
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 5000,
+      "usage": {
+        "ataka": 171,
+        "geico": 1657,
+        "ezmassage": 1725,
+        "libertyarms": 630,
+        "secretlair": 706,
+        "harborfreight": 4587
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-06-20",
+        "toDate": "2025-07-22"
+      }
+    },
+    {
+      "id": "bill_20250820",
+      "periodStart": "2025-07-22",
+      "periodEnd": "2025-08-20",
+      "invoiceDate": "2025-08-28",
+      "dueDate": "2025-09-22",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 1.75
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 7000,
+      "usage": {
+        "ataka": 189,
+        "geico": 2065,
+        "ezmassage": 1493,
+        "libertyarms": 568,
+        "secretlair": 678,
+        "harborfreight": 3531
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-07-22",
+        "toDate": "2025-08-20"
+      }
+    },
+    {
+      "id": "bill_20250918",
+      "periodStart": "2025-08-20",
+      "periodEnd": "2025-09-18",
+      "invoiceDate": "2025-09-30",
+      "dueDate": "2025-10-22",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 1.25
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 5000,
+      "usage": {
+        "ataka": 150,
+        "geico": 2322,
+        "ezmassage": 1620,
+        "libertyarms": 544,
+        "secretlair": 651,
+        "harborfreight": 3208
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-08-20",
+        "toDate": "2025-09-18"
+      }
+    },
+    {
+      "id": "bill_20251017",
+      "periodStart": "2025-09-18",
+      "periodEnd": "2025-10-17",
+      "invoiceDate": "2025-10-29",
+      "dueDate": "2025-11-24",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 1.25
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 5000,
+      "usage": {
+        "ataka": 203,
+        "geico": 2108,
+        "ezmassage": 1600,
+        "libertyarms": 522,
+        "secretlair": 732,
+        "harborfreight": 3525
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-09-18",
+        "toDate": "2025-10-17"
+      }
+    },
+    {
+      "id": "bill_20251114",
+      "periodStart": "2025-10-17",
+      "periodEnd": "2025-11-14",
+      "invoiceDate": "2025-11-25",
+      "dueDate": "2025-12-22",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 1.5
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 6000,
+      "usage": {
+        "ataka": 191,
+        "geico": 2681,
+        "ezmassage": 1246,
+        "libertyarms": 505,
+        "secretlair": 779,
+        "harborfreight": 3935
+      },
+      "status": "Invoiced",
+      "notes": "Nov 2025 city bill went unpaid at the time and drew a $12.03 late fee (Total Due shown as $252.66 on the invoice) — that late fee is NOT included in the water/sewer figure here, since it's not a water/sewer or FM charge to bill back to tenants.",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-10-17",
+        "toDate": "2025-11-14"
+      }
+    },
+    {
+      "id": "bill_20251214",
+      "periodStart": "2025-11-14",
+      "periodEnd": "2025-12-14",
+      "invoiceDate": null,
+      "dueDate": null,
+      "water": {
+        "city": 34.9,
+        "tax": 6.97,
+        "sewer": 22.79,
+        "authority": 28.54,
+        "solidWaste": 29.47,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 7000,
+      "usage": {
+        "ataka": 84,
+        "geico": 1831,
+        "ezmassage": 1211,
+        "libertyarms": 524,
+        "secretlair": 736,
+        "harborfreight": 4173
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": true,
+      "estimateNote": "Both the water/sewer and Fire Monitoring city invoices for this cycle are missing from your files (no bill numbered between #797911 and #831000). Water/sewer and FM charges here are interpolated from the surrounding Nov 2025 and Jan 2026 bills, on the same flat-rate bracket. Submeter reads for this period ARE on file (12/14/2025), so the tenant usage split itself is real, only the dollar total is estimated. Unlike March 2026, Leigh Ann's emails don't mention this gap directly — worth flagging to her too.",
+      "readingBracket": {
+        "fromDate": "2025-11-14",
+        "toDate": "2025-12-14"
+      }
+    },
+    {
+      "id": "bill_20260115",
+      "periodStart": "2025-12-15",
+      "periodEnd": "2026-01-15",
+      "invoiceDate": "2026-01-29",
+      "dueDate": "2026-02-23",
+      "water": {
+        "city": 35.52,
+        "tax": 7.1,
+        "sewer": 23.2,
+        "authority": 29.05,
+        "solidWaste": 30,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 8000,
+      "usage": {
+        "ataka": 114,
+        "geico": 694,
+        "ezmassage": 1615,
+        "libertyarms": 542,
+        "secretlair": 688,
+        "harborfreight": 5175
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2025-12-14",
+        "toDate": "2026-01-15"
+      }
+    },
+    {
+      "id": "bill_20260213",
+      "periodStart": "2026-01-15",
+      "periodEnd": "2026-02-13",
+      "invoiceDate": "2026-02-26",
+      "dueDate": "2026-03-23",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 5000,
+      "usage": {
+        "ataka": 104,
+        "geico": 439,
+        "ezmassage": 1186,
+        "libertyarms": 472,
+        "secretlair": 683,
+        "harborfreight": 3352
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2026-01-15",
+        "toDate": "2026-02-13"
+      }
+    },
+    {
+      "id": "bill_20260316",
+      "periodStart": "2026-02-13",
+      "periodEnd": "2026-03-16",
+      "invoiceDate": "2026-03-31",
+      "dueDate": "2026-04-22",
+      "water": {
+        "city": 33.13,
+        "tax": 6.63,
+        "sewer": 21.64,
+        "authority": 27.09,
+        "solidWaste": 29.85,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 6000,
+      "usage": {
+        "ataka": 242,
+        "geico": 477,
+        "ezmassage": 1591,
+        "libertyarms": 603,
+        "secretlair": 947,
+        "harborfreight": 4289
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": true,
+      "estimateNote": "The City's water/sewer invoice for this cycle is missing from your files (sequence jumps from the Feb 26, 2026 bill straight to Apr 29, 2026) — Leigh Ann's 6/25 follow-up email confirmed this and said the amount actually paid to the City was $118.34, so that figure is used here as the real total (not a guess), with the Water/Tax/Sewer/Authority/Solid-Waste breakdown estimated proportionally from the surrounding Feb/Apr 2026 rate structure since the itemized invoice isn't available. The Fire Monitoring charge for this cycle IS from an actual invoice (#864122, $15.98) — only the water/sewer breakdown is estimated. Submeter usage for this period comes from real readings on file.",
+      "readingBracket": {
+        "fromDate": "2026-02-13",
+        "toDate": "2026-03-17"
+      }
+    },
+    {
+      "id": "bill_20260415",
+      "periodStart": "2026-03-16",
+      "periodEnd": "2026-04-15",
+      "invoiceDate": "2026-04-29",
+      "dueDate": "2026-05-22",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 7000,
+      "usage": {
+        "ataka": 157,
+        "geico": 471,
+        "ezmassage": 1540,
+        "libertyarms": 569,
+        "secretlair": 734,
+        "harborfreight": 3572
+      },
+      "status": "Invoiced",
+      "notes": "",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2026-03-17",
+        "toDate": "2026-04-14"
+      }
+    },
+    {
+      "id": "bill_20260515",
+      "periodStart": "2026-04-15",
+      "periodEnd": "2026-05-15",
+      "invoiceDate": "2026-05-28",
+      "dueDate": "2026-06-22",
+      "water": {
+        "city": 33.3,
+        "tax": 6.66,
+        "sewer": 21.75,
+        "authority": 27.23,
+        "solidWaste": 30,
+        "seasonal": 0
+      },
+      "fm": {
+        "city": 13.32,
+        "tax": 2.66
+      },
+      "masterUsage": 7000,
+      "usage": {
+        "ataka": 150,
+        "geico": 605,
+        "ezmassage": 1769,
+        "libertyarms": 661,
+        "secretlair": 842,
+        "harborfreight": 4182
+      },
+      "status": "Invoiced",
+      "notes": "Meter swapped mid-cycle (old meter #06046128 retired at 1935, replaced by #93240428) — no impact on the billed usage/amount.",
+      "estimated": false,
+      "estimateNote": "",
+      "readingBracket": {
+        "fromDate": "2026-04-14",
+        "toDate": "2026-05-15"
+      }
+    }
+  ],
+  "readings": [
+    {
+      "date": "2024-12-20",
+      "readings": {
+        "ataka": 244,
+        "geico": 97218,
+        "ezmassage": 91655,
+        "libertyarms": 74480,
+        "secretlair": 20057,
+        "harborfreight": 320939
+      }
+    },
+    {
+      "date": "2025-01-21",
+      "readings": {
+        "ataka": 274,
+        "geico": 97997,
+        "ezmassage": 93366,
+        "libertyarms": 75010,
+        "secretlair": 20584,
+        "harborfreight": 324815
+      }
+    },
+    {
+      "date": "2025-02-20",
+      "readings": {
+        "ataka": 371,
+        "geico": 98763,
+        "ezmassage": 94999,
+        "libertyarms": 75634,
+        "secretlair": 21112,
+        "harborfreight": 328240
+      }
+    },
+    {
+      "date": "2025-03-20",
+      "readings": {
+        "ataka": 405,
+        "geico": 99485,
+        "ezmassage": 96539,
+        "libertyarms": 76175,
+        "secretlair": 21699,
+        "harborfreight": 331257
+      }
+    },
+    {
+      "date": "2025-04-21",
+      "readings": {
+        "ataka": 486,
+        "geico": 100466,
+        "ezmassage": 98203,
+        "libertyarms": 76780,
+        "secretlair": 22339,
+        "harborfreight": 334842
+      }
+    },
+    {
+      "date": "2025-05-20",
+      "readings": {
+        "ataka": 552,
+        "geico": 101815,
+        "ezmassage": 99664,
+        "libertyarms": 77322,
+        "secretlair": 22896,
+        "harborfreight": 338116
+      }
+    },
+    {
+      "date": "2025-06-20",
+      "readings": {
+        "ataka": 582,
+        "geico": 103771,
+        "ezmassage": 101336,
+        "libertyarms": 78018,
+        "secretlair": 23525,
+        "harborfreight": 342822
+      }
+    },
+    {
+      "date": "2025-07-22",
+      "readings": {
+        "ataka": 753,
+        "geico": 105428,
+        "ezmassage": 103061,
+        "libertyarms": 78648,
+        "secretlair": 24231,
+        "harborfreight": 347409
+      }
+    },
+    {
+      "date": "2025-08-20",
+      "readings": {
+        "ataka": 942,
+        "geico": 107493,
+        "ezmassage": 104554,
+        "libertyarms": 79216,
+        "secretlair": 24909,
+        "harborfreight": 350940
+      }
+    },
+    {
+      "date": "2025-09-18",
+      "readings": {
+        "ataka": 1092,
+        "geico": 109815,
+        "ezmassage": 106174,
+        "libertyarms": 79760,
+        "secretlair": 25560,
+        "harborfreight": 354148
+      }
+    },
+    {
+      "date": "2025-10-17",
+      "readings": {
+        "ataka": 1295,
+        "geico": 111923,
+        "ezmassage": 107774,
+        "libertyarms": 80282,
+        "secretlair": 26292,
+        "harborfreight": 357673
+      }
+    },
+    {
+      "date": "2025-11-14",
+      "readings": {
+        "ataka": 1486,
+        "geico": 114604,
+        "ezmassage": 109020,
+        "libertyarms": 80787,
+        "secretlair": 27071,
+        "harborfreight": 361608
+      }
+    },
+    {
+      "date": "2025-12-14",
+      "readings": {
+        "ataka": 1570,
+        "geico": 116435,
+        "ezmassage": 110231,
+        "libertyarms": 81311,
+        "secretlair": 27807,
+        "harborfreight": 365781
+      }
+    },
+    {
+      "date": "2026-01-15",
+      "readings": {
+        "ataka": 1684,
+        "geico": 117129,
+        "ezmassage": 111846,
+        "libertyarms": 81853,
+        "secretlair": 28495,
+        "harborfreight": 370956
+      }
+    },
+    {
+      "date": "2026-02-13",
+      "readings": {
+        "ataka": 1788,
+        "geico": 117568,
+        "ezmassage": 113032,
+        "libertyarms": 82325,
+        "secretlair": 29178,
+        "harborfreight": 374308
+      }
+    },
+    {
+      "date": "2026-03-17",
+      "readings": {
+        "ataka": 2030,
+        "geico": 118045,
+        "ezmassage": 114623,
+        "libertyarms": 82928,
+        "secretlair": 30125,
+        "harborfreight": 378597
+      }
+    },
+    {
+      "date": "2026-04-14",
+      "readings": {
+        "ataka": 2187,
+        "geico": 118516,
+        "ezmassage": 116163,
+        "libertyarms": 83497,
+        "secretlair": 30859,
+        "harborfreight": 382169
+      }
+    },
+    {
+      "date": "2026-05-15",
+      "readings": {
+        "ataka": 2337,
+        "geico": 119121,
+        "ezmassage": 117932,
+        "libertyarms": 84158,
+        "secretlair": 31701,
+        "harborfreight": 386351
+      }
+    }
+  ]
+}
