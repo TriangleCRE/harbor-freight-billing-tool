@@ -55,9 +55,9 @@ function renderLoginPage({ error } = {}) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign in — Harbor Freight Center</title>
+<title>Sign in — Harbor Freight Billing Tool</title>
 <style>
-  :root{ --accent:#2da84e; --accent-dark:#228241; --ink:#1f2430; --muted:#6b7280; --bg:#f5f6f8; --card:#ffffff; --border:#e3e6ea; --danger:#c0392b; --danger-light:#fbeceb; }
+  :root{ --accent:#2da84e; --accent-dark:#3f7d3f; --ink:#1f2430; --muted:#6b7280; --bg:#f2f3f5; --card:#ffffff; --border:#e3e6ea; --danger:#c0392b; --danger-light:#fbeceb; }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;height:100%;}
   body{
@@ -66,23 +66,30 @@ function renderLoginPage({ error } = {}) {
     display:flex; align-items:center; justify-content:center; min-height:100%; padding:20px;
   }
   .card{
-    background:var(--card); border:1px solid var(--border); border-radius:12px;
-    box-shadow:0 1px 2px rgba(20,20,30,0.04), 0 1px 8px rgba(20,20,30,0.04);
-    padding:32px 28px; width:100%; max-width:360px;
+    background:var(--card); border-radius:14px; overflow:hidden;
+    box-shadow:0 8px 24px rgba(20,20,30,0.10), 0 1px 3px rgba(20,20,30,0.06);
+    width:100%; max-width:460px;
   }
-  h1{ font-size:17px; margin:0 0 4px; font-weight:700; letter-spacing:-0.01em; }
-  p.sub{ font-size:13px; color:var(--muted); margin:0 0 20px; }
-  label{ font-size:12.5px; font-weight:600; color:var(--muted); display:block; margin-bottom:6px; }
+  .card-bar{ height:6px; background:var(--accent); }
+  .card-body{ padding:32px 36px 36px; }
+  .brand{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
+  .brand svg{ flex:none; }
+  .brand .word{ font-size:26px; font-weight:800; letter-spacing:.01em; color:var(--ink); }
+  .tagline{
+    font-size:12px; font-weight:600; letter-spacing:.045em; color:var(--muted);
+    text-transform:uppercase; margin:0 0 26px; white-space:nowrap;
+  }
+  label{ font-size:14.5px; font-weight:700; color:var(--ink); display:block; margin-bottom:8px; }
   input[type="password"]{
-    width:100%; font-size:15px; padding:10px 12px; border:1px solid var(--border);
-    border-radius:8px; font-family:inherit; margin-bottom:16px;
+    width:100%; font-size:15px; padding:12px 14px; border:1.5px solid var(--accent);
+    border-radius:8px; font-family:inherit; margin-bottom:20px;
   }
   input[type="password"]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   button{
-    width:100%; font-size:14px; font-weight:600; padding:10px 13px; border-radius:8px;
-    border:1px solid var(--accent-dark); background:var(--accent); color:#fff; cursor:pointer;
+    width:100%; font-size:15px; font-weight:700; padding:13px 13px; border-radius:8px;
+    border:1px solid var(--accent-dark); background:var(--accent-dark); color:#fff; cursor:pointer;
   }
-  button:hover{ background:var(--accent-dark); }
+  button:hover{ background:#356b35; }
   .error{
     background:var(--danger-light); color:var(--danger); border:1px solid var(--danger);
     border-radius:8px; padding:9px 12px; font-size:13px; margin-bottom:16px;
@@ -91,14 +98,22 @@ function renderLoginPage({ error } = {}) {
 </head>
 <body>
   <div class="card">
-    <h1>Harbor Freight Center</h1>
-    <p class="sub">Enter the passcode to continue.</p>
-    ${error ? '<div class="error">Incorrect passcode. Please try again.</div>' : ""}
-    <form method="POST" action="/login" autocomplete="off">
-      <label for="passcode">Passcode</label>
-      <input type="password" id="passcode" name="passcode" autofocus required>
-      <button type="submit">Continue</button>
-    </form>
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="brand">
+        <svg width="18" height="24" viewBox="0 0 18 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polygon points="0,0 0,24 18,24" fill="#2da84e"/>
+        </svg>
+        <span class="word">TRIANGLE</span>
+      </div>
+      <p class="tagline">Investment Group &middot; Harbor Freight Billing Tool</p>
+      ${error ? '<div class="error">Incorrect passcode. Please try again.</div>' : ""}
+      <form method="POST" action="/login" autocomplete="off">
+        <label for="passcode">Passcode</label>
+        <input type="password" id="passcode" name="passcode" autofocus required>
+        <button type="submit">Enter</button>
+      </form>
+    </div>
   </div>
 </body>
 </html>`;
