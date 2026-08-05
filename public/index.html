@@ -1346,7 +1346,12 @@ function renderTenantRoster(){
   let html = '<table class="data"><thead><tr><th>Tenant</th><th>Meter</th><th class="num">Sqft (ref.)</th><th class="num">FM pro-rata %</th><th>Lease from</th><th>Lease to</th><th>Billed from (blank = excluded)</th><th>Logo</th></tr></thead><tbody>';
   STATE.tenants.forEach(t=>{
     html += `<tr>
-      <td><div class="tenant-chip"><img src="${logoFor(t)}" onerror="this.style.display='none'"><span class="tname">${t.name}</span></div>${t.meterUnconfirmed?'<div class="small-note" style="color:var(--warn);">⚑ Meter unconfirmed — confirm with the city/tenant before back-billing.</div>':''}</td>
+      <td><div class="tenant-chip"><img src="${logoFor(t)}" onerror="this.style.display='none'"><span class="tname">${t.name}</span></div>
+        <label class="small-note" style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px;${t.meterUnconfirmed?'color:var(--warn);':''}">
+          <input type="checkbox" class="ros-meterconfirmed" data-id="${t.id}" ${t.meterUnconfirmed?'':'checked'}>
+          ${t.meterUnconfirmed?'⚑ Meter unconfirmed — confirm with the city/tenant before back-billing.':'Meter confirmed'}
+        </label>
+      </td>
       <td><input class="ros-meter" data-id="${t.id}" value="${t.meterLabel}" style="border:none;background:transparent;"></td>
       <td><input class="ros-sqft" data-id="${t.id}" type="number" value="${t.sqft}" style="text-align:right;"></td>
       <td><input class="ros-fmpct" data-id="${t.id}" type="number" step="0.01" value="${round2((t.fmPct||0)*100)}" style="text-align:right;"></td>
@@ -1361,6 +1366,14 @@ function renderTenantRoster(){
   const offBy = Math.abs(pctSum-100) > 0.05;
   html += `<p class="small-note" style="margin-top:8px;${offBy?'color:var(--warn);font-weight:600;':''}">FM pro-rata % across all tenants sums to ${pctSum.toFixed(2)}%${offBy?" — should be 100% (per Leigh Ann's lease figures); double-check before billing.":" — matches Leigh Ann's lease figures."}</p>`;
   wrap.innerHTML = html;
+  wrap.querySelectorAll('.ros-meterconfirmed').forEach(i=>i.addEventListener('change',()=>{
+    const t=tenantById(i.dataset.id);
+    t.meterUnconfirmed = !i.checked;
+    saveTenant(t);
+    renderTenantRoster();
+    renderTenantStrip();
+    showToast((t.meterUnconfirmed?'Meter marked unconfirmed for ':'Meter confirmed for ')+t.name);
+  }));
   wrap.querySelectorAll('.ros-meter').forEach(i=>i.addEventListener('change',()=>{const t=tenantById(i.dataset.id);t.meterLabel=i.value;saveTenant(t);renderSplitTable();}));
   wrap.querySelectorAll('.ros-sqft').forEach(i=>i.addEventListener('change',()=>{const t=tenantById(i.dataset.id);t.sqft=parseFloat(i.value)||0;saveTenant(t);renderSplitTable();renderTenantStrip();}));
   wrap.querySelectorAll('.ros-fmpct').forEach(i=>i.addEventListener('change',()=>{const t=tenantById(i.dataset.id);t.fmPct=(parseFloat(i.value)||0)/100;saveTenant(t);renderSplitTable();renderTenantStrip();renderTenantRoster();}));
