@@ -21,12 +21,19 @@ function under `/api` read them from `process.env` at request time.
   `SEED_BILLS` / `SEED_READINGS` in `public/index.html`.
 - `db/seed.js` — creates the tables (if missing) and loads them with
   `seed-data.json`. Safe to re-run: it upserts by primary key.
+- `db/seed.sql` — the same schema + seed data as one plain SQL script (no
+  Node/CLI needed), for pasting straight into the Neon SQL Editor. Also safe
+  to re-run.
 
-To (re-)provision a database:
+To (re-)provision a database, either:
 
 ```bash
 DATABASE_URL="postgres://..." npm run db:seed
 ```
+
+or open the attached Neon database's SQL Editor (Vercel dashboard → your
+project → **Storage** tab → the Postgres database → **Open in Neon Console**
+→ **SQL Editor**) and paste in the contents of `db/seed.sql`.
 
 ## API
 
