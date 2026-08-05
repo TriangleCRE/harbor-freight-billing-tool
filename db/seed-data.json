@@ -68,14 +68,14 @@
     {
       "id": "ataka",
       "name": "Ataka Industries, LLC",
-      "meterLabel": "Suite 101 / Unit 101 (utility closet meter — unconfirmed)",
+      "meterLabel": "Suite 101 / Unit 101 (formerly labeled \"storage closet\" — confirmed by Leigh Ann 8/5/26 as Ataka's meter)",
       "sqft": 4000,
       "fmPct": 0.0671,
       "leaseFrom": "2024-04-15",
       "leaseTo": "2029-04-30",
       "billedFrom": null,
       "requireExplicitStart": true,
-      "meterUnconfirmed": true,
+      "meterUnconfirmed": false,
       "logoKey": "ataka"
     }
   ],
@@ -541,8 +541,8 @@
       },
       "status": "Invoiced",
       "notes": "",
-      "estimated": false,
-      "estimateNote": "",
+      "estimated": true,
+      "estimateNote": "The City's water/sewer and Fire Monitoring invoices for this cycle are missing from your files (same gap pattern as the Feb–Mar 2026 cycle). Water/sewer and FM charges here are interpolated from the surrounding Nov–Dec 2025 and Jan–Feb 2026 bills, the same method originally used for March. Leigh Ann confirmed (8/5/26) that there's no invoice on file for this period and that the amount actually paid to the City was only around $1.25 — not a plausible total for a full water/sewer + FM cycle, so it isn't used here; the interpolated estimate above is kept as the billed figure. Submeter usage for this period comes from real readings on file.",
       "readingBracket": {
         "fromDate": "2025-12-14",
         "toDate": "2026-01-15"
