@@ -1487,6 +1487,22 @@ document.getElementById('btnExport').addEventListener('click', ()=>{
   URL.revokeObjectURL(url);
   showToast('Backup exported.');
 });
+// Shared by the "Import JSON" button and the local-backup-detection banner
+// below — both hand it a parsed {tenants, bills, readings?} object.
+async function importBackupData(data){
+  // backward-compat with older backups that kept logos in a separate map
+  if(data.tenantLogoOverrides){
+    data.tenants = (data.tenants||[]).map(t=> Object.assign({}, t, {
+      logoOverride: data.tenantLogoOverrides[t.id] || t.logoOverride || null
+    }));
+  }
+  data.readings = data.readings || [];
+  setSaveStatus('Importing…');
+  await apiPost('/import', {tenants:data.tenants, bills:data.bills, readings:data.readings});
+  await loadStateFromServer();
+  renderEverything();
+}
+
 document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('importFile').click());
 document.getElementById('importFile').addEventListener('change', (e)=>{
   const file = e.target.files[0]; if(!file) return;
@@ -1500,18 +1516,8 @@ document.getElementById('importFile').addEventListener('change', (e)=>{
       alert('That file does not look like a valid backup JSON for this tool.');
       return;
     }
-    // backward-compat with older backups that kept logos in a separate map
-    if(data.tenantLogoOverrides){
-      data.tenants = (data.tenants||[]).map(t=> Object.assign({}, t, {
-        logoOverride: data.tenantLogoOverrides[t.id] || t.logoOverride || null
-      }));
-    }
-    data.readings = data.readings || [];
     try{
-      setSaveStatus('Importing…');
-      await apiPost('/import', {tenants:data.tenants, bills:data.bills, readings:data.readings});
-      await loadStateFromServer();
-      renderEverything();
+      await importBackupData(data);
       showToast('Backup imported.');
     }catch(err){
       persistFail(err);
@@ -1520,6 +1526,54 @@ document.getElementById('importFile').addEventListener('change', (e)=>{
   };
   reader.readAsText(file);
 });
+
+/* ---------- Local-backup safety net ----------
+   Older versions of this tool saved edits to this browser's localStorage
+   instead of the shared database. If that data is still sitting in this
+   browser and looks different from what's now in the database (e.g. this
+   browser has bills/readings the database doesn't), offer to import it
+   instead of silently leaving it stranded. Never deletes or overwrites
+   localStorage itself — it's only ever read here. */
+const LEGACY_STORAGE_KEY = 'hf_waterbill_v1';
+function checkForLocalBackup(){
+  let local;
+  try{
+    const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if(!raw) return;
+    local = JSON.parse(raw);
+  }catch(e){ return; }
+  if(!local || !Array.isArray(local.tenants) || !Array.isArray(local.bills)) return;
+  if(sessionStorage.getItem('hf_dismissed_local_backup_prompt')) return;
+
+  const latest = (list)=> list.reduce((m,x)=> ((x.periodEnd||x.date||'') > m ? (x.periodEnd||x.date||'') : m), '');
+  const localBills = local.bills.length, dbBills = STATE.bills.length;
+  const localReadings = (local.readings||[]).length, dbReadings = STATE.readings.length;
+  const localLatestBill = latest(local.bills), dbLatestBill = latest(STATE.bills);
+  const looksDifferent = localBills !== dbBills || localReadings !== dbReadings || localLatestBill !== dbLatestBill;
+  if(!looksDifferent) return;
+
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#fff4d6;border-bottom:2px solid #e8b93a;padding:12px 16px;font-size:13.5px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,0.08);';
+  banner.innerHTML = `<span><b>Heads up:</b> this browser has saved data (bills: ${localBills}, readings: ${localReadings}, latest period end: ${localLatestBill||'—'}) that doesn't match what's currently in the database (bills: ${dbBills}, readings: ${dbReadings}, latest period end: ${dbLatestBill||'—'}). It may be missing from the shared database.</span>
+    <button class="small primary" id="localBackupImportBtn">Review &amp; import it</button>
+    <button class="small ghost" id="localBackupDismissBtn">Dismiss</button>`;
+  document.body.prepend(banner);
+  document.getElementById('localBackupDismissBtn').addEventListener('click', ()=>{
+    sessionStorage.setItem('hf_dismissed_local_backup_prompt', '1');
+    banner.remove();
+  });
+  document.getElementById('localBackupImportBtn').addEventListener('click', async ()=>{
+    if(!confirm('Import this browser\'s saved data into the shared database now? This will replace the tenants, bills, and readings currently in the database with this browser\'s copy ('+localBills+' bills, '+localReadings+' readings).')) return;
+    try{
+      await importBackupData(local);
+      banner.remove();
+      showToast('Local backup imported into the database.');
+    }catch(err){
+      persistFail(err);
+      alert('Could not import that local data. Please try again, or use Export/Import JSON manually.');
+    }
+  });
+}
 
 /* ---------- init ---------- */
 function renderEverything(){
@@ -1543,6 +1597,7 @@ async function bootstrap(){
     return;
   }
   renderEverything();
+  checkForLocalBackup();
 }
 bootstrap();
 </script>
