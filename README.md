@@ -16,24 +16,36 @@ function under `/api` read them from `process.env` at request time.
 
 ## Database
 
-- `db/schema.sql` — the three tables the app uses: `tenants`, `bills`, `readings`.
-- `db/seed-data.json` — the data that used to be hard-coded as `SEED_TENANTS` /
-  `SEED_BILLS` / `SEED_READINGS` in `public/index.html`.
-- `db/seed.js` — creates the tables (if missing) and loads them with
-  `seed-data.json`. Safe to re-run: it upserts by primary key.
-- `db/seed.sql` — the same schema + seed data as one plain SQL script (no
-  Node/CLI needed), for pasting straight into the Neon SQL Editor. Also safe
-  to re-run.
+The tables are three: `tenants`, `bills`, `readings` (schema in
+`lib/schema.js`) — uniform, clearly-relational data gets normal typed
+columns; the genuinely variable nested bits (a bill's water/FM line items, a
+tenant's per-suite usage, a reading's per-tenant gallons) live in `JSONB`
+columns so no field gets lost to a rigid schema.
 
-To (re-)provision a database, either:
+**Self-healing, on purpose:** the site does not depend on anyone running a
+migration by hand. Every database access (`lib/db.js`) first calls
+`lib/ensureSchema.js`, which:
+
+1. Runs the (idempotent) `CREATE TABLE IF NOT EXISTS` statements.
+2. For each table that is *completely empty*, loads it from
+   `db/seed-data.json` (the data that used to be hard-coded as
+   `SEED_TENANTS` / `SEED_BILLS` / `SEED_READINGS` in `public/index.html`).
+3. Never touches a table that already has even one row — so once real data
+   exists, this can't overwrite it, no matter how many times it runs.
+
+A Postgres advisory lock serializes this across concurrent cold starts, and
+the check is cached per warm serverless instance so it's a no-op after the
+first request. In short: point a brand-new, empty Neon database at this
+project and the very first page load sets everything up automatically.
+
+For manual/local use, two standalone scripts run that same logic directly
+(both safe to re-run — they only ever create-if-missing / seed-if-empty,
+never overwrite):
 
 ```bash
-DATABASE_URL="postgres://..." npm run db:seed
+DATABASE_URL="postgres://..." npm run db:migrate   # tables only, no seed data
+DATABASE_URL="postgres://..." npm run db:seed      # tables + seed if empty
 ```
-
-or open the attached Neon database's SQL Editor (Vercel dashboard → your
-project → **Storage** tab → the Postgres database → **Open in Neon Console**
-→ **SQL Editor**) and paste in the contents of `db/seed.sql`.
 
 ## API
 
