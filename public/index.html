@@ -166,7 +166,6 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 .tenant-strip{display:flex;gap:12px;margin:18px 0 6px;flex-wrap:wrap;}
 .tenant-strip .tcard{flex:1;min-width:130px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:#fff;box-shadow:var(--shadow);}
 .tenant-strip .tcard .bar{height:7px;background:var(--accent);}
-.tenant-strip .tcard.unconfirmed .bar{background:repeating-linear-gradient(45deg, var(--warn), var(--warn) 6px, #f0dba8 6px, #f0dba8 12px);}
 .tenant-strip .tcard .body{padding:12px 10px;display:flex;align-items:center;justify-content:center;height:52px;}
 .tenant-strip .tcard img{max-width:100%;max-height:44px;object-fit:contain;}
 .tenant-strip .tcard .name-fallback{font-size:12px;font-weight:700;text-align:center;color:var(--ink);}
@@ -348,6 +347,13 @@ table.bills-table .row-actions a.del{color:var(--danger);}
       <div class="field" style="margin-top:10px;">
         <label>Notes</label>
         <textarea id="fNotes" rows="2" placeholder="Anything notable about this bill..."></textarea>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <label style="display:flex;align-items:center;gap:6px;text-transform:none;font-weight:600;font-size:13px;cursor:pointer;">
+          <input type="checkbox" id="fEstimated">
+          Estimated period (city invoice missing for this cycle)
+        </label>
+        <textarea id="fEstimateNote" rows="2" style="margin-top:6px;" placeholder="Explain what's estimated and why (shown on statements &amp; invoices)..."></textarea>
       </div>
 
       <div class="row" style="margin-top:14px;">
@@ -805,7 +811,7 @@ function blankBill(){
 function startDraftFromBill(bill){ draftBill = JSON.parse(JSON.stringify(bill)); draftBillId = bill.id; }
 function startNewDraft(){ draftBill = blankBill(); draftBillId = null; }
 
-const formIds = ['fPeriodStart','fPeriodEnd','fWaterCity','fWaterTax','fSewer','fAuthority','fSolidWaste','fSeasonal','fMasterUsage','fFmCity','fFmTax','fStatus','fNotes'];
+const formIds = ['fPeriodStart','fPeriodEnd','fWaterCity','fWaterTax','fSewer','fAuthority','fSolidWaste','fSeasonal','fMasterUsage','fFmCity','fFmTax','fStatus','fNotes','fEstimated','fEstimateNote'];
 
 function loadDraftIntoForm(){
   const b = draftBill;
@@ -825,6 +831,8 @@ function loadDraftIntoForm(){
   document.getElementById('fFmTax').value = b.fm.tax||0;
   document.getElementById('fStatus').value = b.status||'Draft';
   document.getElementById('fNotes').value = b.notes||'';
+  document.getElementById('fEstimated').checked = !!b.estimated;
+  document.getElementById('fEstimateNote').value = b.estimateNote||'';
   renderReadingPickers();
   refreshComputed();
 }
@@ -845,6 +853,8 @@ function readFormIntoDraft(){
   b.fm = { city: parseFloat(document.getElementById('fFmCity').value)||0, tax: parseFloat(document.getElementById('fFmTax').value)||0 };
   b.status = document.getElementById('fStatus').value;
   b.notes = document.getElementById('fNotes').value;
+  b.estimated = document.getElementById('fEstimated').checked;
+  b.estimateNote = document.getElementById('fEstimateNote').value;
 }
 
 function renderReadingPickers(){
@@ -943,7 +953,7 @@ function renderSplitTable(){
   let rows = '';
   split.eligibleRows.slice().sort((a,b2)=>b2.usage-a.usage).forEach(r=>{
     rows += `<tr>
-      <td><div class="tenant-chip"><img src="${logoFor(r.tenant)}" onerror="this.style.display='none'"><span><span class="tname">${r.tenant.name}</span><span class="tsub">${r.tenant.meterLabel}${r.tenant.meterUnconfirmed?' · <span class="badge warn">unconfirmed</span>':''}</span></span></div></td>
+      <td><div class="tenant-chip"><img src="${logoFor(r.tenant)}" onerror="this.style.display='none'"><span><span class="tname">${r.tenant.name}</span><span class="tsub">${r.tenant.meterLabel}</span></span></div></td>
       <td class="num tnum">${fmtNum(r.usage)}</td>
       <td class="num tnum">${fmtPct(r.waterRatio)}</td>
       <td class="num tnum">${fmtMoney(r.waterShare)}</td>
@@ -1320,7 +1330,7 @@ function renderTenantStrip(){
   const wrap = document.getElementById('tenantStrip');
   wrap.innerHTML = STATE.tenants.map(t=>{
     const logo = logoFor(t);
-    return `<div class="tcard${t.meterUnconfirmed?' unconfirmed':''}" data-tid="${t.id}">
+    return `<div class="tcard" data-tid="${t.id}">
       <div class="bar"></div>
       <div class="body">${logo?`<img src="${logo}" onerror="this.parentElement.innerHTML='<span class=\\'name-fallback\\'>${t.name}</span>'">`:`<span class="name-fallback">${t.name}</span>`}</div>
       <div class="foot">${t.name}</div>
@@ -1330,8 +1340,7 @@ function renderTenantStrip(){
   wrap.querySelectorAll('.tcard').forEach(card=>{
     const t = tenantById(card.dataset.tid);
     card.addEventListener('mouseenter', (e)=>{
-      let extra = t.meterUnconfirmed ? '<br><span style="color:#f0b94a;">Meter unconfirmed — not yet billed</span>' : '';
-      tip.innerHTML = `<b>${t.name}</b><span>${fmtNum(t.sqft)} sq ft · ${fmtPct(t.fmPct)} lease pro-rata share${extra}</span>`;
+      tip.innerHTML = `<b>${t.name}</b><span>${fmtNum(t.sqft)} sq ft · ${fmtPct(t.fmPct)} lease pro-rata share</span>`;
       tip.classList.add('show');
     });
     card.addEventListener('mousemove', (e)=>{
@@ -1346,12 +1355,7 @@ function renderTenantRoster(){
   let html = '<table class="data"><thead><tr><th>Tenant</th><th>Meter</th><th class="num">Sqft (ref.)</th><th class="num">FM pro-rata %</th><th>Lease from</th><th>Lease to</th><th>Billed from (blank = excluded)</th><th>Logo</th></tr></thead><tbody>';
   STATE.tenants.forEach(t=>{
     html += `<tr>
-      <td><div class="tenant-chip"><img src="${logoFor(t)}" onerror="this.style.display='none'"><span class="tname">${t.name}</span></div>
-        <label class="small-note" style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px;${t.meterUnconfirmed?'color:var(--warn);':''}">
-          <input type="checkbox" class="ros-meterconfirmed" data-id="${t.id}" ${t.meterUnconfirmed?'':'checked'}>
-          ${t.meterUnconfirmed?'⚑ Meter unconfirmed — confirm with the city/tenant before back-billing.':'Meter confirmed'}
-        </label>
-      </td>
+      <td><div class="tenant-chip"><img src="${logoFor(t)}" onerror="this.style.display='none'"><span class="tname">${t.name}</span></div></td>
       <td><input class="ros-meter" data-id="${t.id}" value="${t.meterLabel}" style="border:none;background:transparent;"></td>
       <td><input class="ros-sqft" data-id="${t.id}" type="number" value="${t.sqft}" style="text-align:right;"></td>
       <td><input class="ros-fmpct" data-id="${t.id}" type="number" step="0.01" value="${round2((t.fmPct||0)*100)}" style="text-align:right;"></td>
@@ -1366,14 +1370,6 @@ function renderTenantRoster(){
   const offBy = Math.abs(pctSum-100) > 0.05;
   html += `<p class="small-note" style="margin-top:8px;${offBy?'color:var(--warn);font-weight:600;':''}">FM pro-rata % across all tenants sums to ${pctSum.toFixed(2)}%${offBy?" — should be 100% (per Leigh Ann's lease figures); double-check before billing.":" — matches Leigh Ann's lease figures."}</p>`;
   wrap.innerHTML = html;
-  wrap.querySelectorAll('.ros-meterconfirmed').forEach(i=>i.addEventListener('change',()=>{
-    const t=tenantById(i.dataset.id);
-    t.meterUnconfirmed = !i.checked;
-    saveTenant(t);
-    renderTenantRoster();
-    renderTenantStrip();
-    showToast((t.meterUnconfirmed?'Meter marked unconfirmed for ':'Meter confirmed for ')+t.name);
-  }));
   wrap.querySelectorAll('.ros-meter').forEach(i=>i.addEventListener('change',()=>{const t=tenantById(i.dataset.id);t.meterLabel=i.value;saveTenant(t);renderSplitTable();}));
   wrap.querySelectorAll('.ros-sqft').forEach(i=>i.addEventListener('change',()=>{const t=tenantById(i.dataset.id);t.sqft=parseFloat(i.value)||0;saveTenant(t);renderSplitTable();renderTenantStrip();}));
   wrap.querySelectorAll('.ros-fmpct').forEach(i=>i.addEventListener('change',()=>{const t=tenantById(i.dataset.id);t.fmPct=(parseFloat(i.value)||0)/100;saveTenant(t);renderSplitTable();renderTenantStrip();renderTenantRoster();}));
