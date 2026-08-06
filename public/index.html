@@ -511,10 +511,29 @@ const PROPERTY = {"name": "Harbor Freight Center", "address": "1854 E Market St,
 
 /* ---------- API client ---------- */
 const API_BASE = '/api';
+// A browser fetch() with no server-side timeout will just sit there until
+// the server hangs up on its own -- for a Vercel function that's the full
+// 300s. Aborting client-side well before that turns a stuck request into a
+// fast, visible error instead of the page looking frozen/empty for
+// several minutes. Kept above the server's own statement/lock timeouts
+// (see lib/db.js, lib/ensureSchema.js) so the server's more specific error
+// message wins in the normal case; this is just a backstop.
+const API_TIMEOUT_MS = 45000;
 async function apiFetch(path, options){
-  const res = await fetch(API_BASE + path, Object.assign({
-    headers: {'Content-Type':'application/json'}
-  }, options));
+  const controller = new AbortController();
+  const timer = setTimeout(()=> controller.abort(), API_TIMEOUT_MS);
+  let res;
+  try{
+    res = await fetch(API_BASE + path, Object.assign({
+      headers: {'Content-Type':'application/json'},
+      signal: controller.signal
+    }, options));
+  }catch(e){
+    if(e.name === 'AbortError') throw new Error('Request timed out — the server took too long to respond.');
+    throw e;
+  }finally{
+    clearTimeout(timer);
+  }
   if(!res.ok){
     let msg = 'Request failed ('+res.status+')';
     try{ const body = await res.json(); if(body && body.error) msg = body.error; }catch(e){}
@@ -568,15 +587,32 @@ function deleteReadingApi(date){ return apiDelete('/reading?date='+encodeURIComp
 /* ---------- State (loaded from the database on page load) ---------- */
 let STATE = { tenants: [], bills: [], readings: [], meta: { lastOpenTab:'split' } };
 
+// Loads tenants/bills/readings independently (Promise.allSettled, not
+// Promise.all) so one slow or failing endpoint can't blank out the whole
+// page. Previously all three were awaited together: if any single one
+// hung (e.g. a stuck query on the server), the page sat on "Loading…"
+// showing nothing at all, even though the other two had already come back
+// fine — indistinguishable, from the user's side, from every bit of data
+// having been deleted. Now whatever loads successfully renders, and only
+// the piece that failed gets called out.
 async function loadStateFromServer(){
   setSaveStatus('Loading…');
-  const [tenants, bills, readings] = await Promise.all([
+  const [tenantsResult, billsResult, readingsResult] = await Promise.allSettled([
     apiGet('/tenants'), apiGet('/bills'), apiGet('/readings')
   ]);
-  STATE.tenants = tenants;
-  STATE.bills = bills;
-  STATE.readings = readings;
-  setSaveStatus('Up to date · '+ new Date().toLocaleTimeString());
+  const failed = [];
+  if(tenantsResult.status === 'fulfilled') STATE.tenants = tenantsResult.value; else failed.push('tenants');
+  if(billsResult.status === 'fulfilled') STATE.bills = billsResult.value; else failed.push('bills');
+  if(readingsResult.status === 'fulfilled') STATE.readings = readingsResult.value; else failed.push('readings');
+  if(failed.length){
+    [tenantsResult, billsResult, readingsResult].forEach((r, i) => {
+      if(r.status === 'rejected') console.error('Failed to load '+['tenants','bills','readings'][i], r.reason);
+    });
+    setSaveStatus('Could not load '+failed.join(', ')+' — check your connection and reload.', true);
+    showToast('Could not load '+failed.join(', ')+' from the server. What did load is shown below — try reloading to get the rest.');
+  }else{
+    setSaveStatus('Up to date · '+ new Date().toLocaleTimeString());
+  }
 }
 
 /* ---------- Helpers ---------- */
@@ -1600,10 +1636,14 @@ async function bootstrap(){
   try{
     await loadStateFromServer();
   }catch(e){
+    // loadStateFromServer handles the normal per-endpoint failure case
+    // itself (see above) and doesn't throw for it — this is a backstop for
+    // something unexpected. Render anyway with whatever's in STATE (even
+    // if that's just the empty defaults) rather than leaving the page
+    // stuck on "Loading…" forever.
     console.error(e);
     setSaveStatus('Could not load data from the database — check your connection and reload.', true);
     showToast('Could not load data from the server. Please reload the page.');
-    return;
   }
   renderEverything();
   checkForLocalBackup();
