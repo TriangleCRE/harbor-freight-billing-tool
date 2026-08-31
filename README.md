@@ -38,6 +38,16 @@ the check is cached per warm serverless instance so it's a no-op after the
 first request. In short: point a brand-new, empty Neon database at this
 project and the very first page load sets everything up automatically.
 
+**Data patches:** because seeding only ever touches a completely empty
+table, editing `db/seed-data.json` has no effect once the site has real
+rows — which it does, almost immediately. When a fact about existing data
+changes after go-live (e.g. a meter's identity gets confirmed) and the live
+rows need an actual correction, add an entry to `lib/dataPatches.js`
+instead. `lib/ensureSchema.js` runs each one at most once per database
+(tracked in the `schema_patches` table) the next time the site is used
+after deploying it — no manual migration step, same as everything else
+here.
+
 For manual/local use, two standalone scripts run that same logic directly
 (both safe to re-run — they only ever create-if-missing / seed-if-empty,
 never overwrite):
