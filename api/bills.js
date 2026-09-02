@@ -2,6 +2,7 @@
 
 const { query } = require("../lib/db");
 const { rowToBill } = require("../lib/mappers");
+const { normalizeNoteEntries } = require("../lib/noteEntries");
 const { requireAuth, readJsonBody, sendError, withErrorHandling } = require("../lib/apiUtil");
 
 // GET  /api/bills  -> list all bills
@@ -24,8 +25,8 @@ module.exports = withErrorHandling(async (req, res) => {
     const { rows } = await query(
       `INSERT INTO bills
         (id, period_start, period_end, invoice_date, due_date, water, fm,
-         master_usage, usage, status, notes, estimated, estimate_note, reading_bracket)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+         master_usage, usage, status, estimated, note_entries, reading_bracket)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        RETURNING *`,
       [
         b.id,
@@ -38,9 +39,8 @@ module.exports = withErrorHandling(async (req, res) => {
         b.masterUsage || 0,
         JSON.stringify(b.usage || {}),
         b.status || "Draft",
-        b.notes || "",
         !!b.estimated,
-        b.estimateNote || "",
+        JSON.stringify(normalizeNoteEntries(b)),
         JSON.stringify(b.readingBracket || { fromDate: "", toDate: "" }),
       ]
     );

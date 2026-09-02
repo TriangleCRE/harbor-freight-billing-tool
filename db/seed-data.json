@@ -108,9 +108,8 @@
         "harborfreight": 3876
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2024-12-20",
         "toDate": "2025-01-21"
@@ -144,9 +143,8 @@
         "harborfreight": 3425
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-01-21",
         "toDate": "2025-02-20"
@@ -180,9 +178,8 @@
         "harborfreight": 3017
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-02-20",
         "toDate": "2025-03-20"
@@ -216,9 +213,8 @@
         "harborfreight": 3585
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-03-20",
         "toDate": "2025-04-21"
@@ -252,9 +248,8 @@
         "harborfreight": 3274
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-04-21",
         "toDate": "2025-05-20"
@@ -288,9 +283,8 @@
         "harborfreight": 4706
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-05-20",
         "toDate": "2025-06-20"
@@ -324,9 +318,8 @@
         "harborfreight": 4587
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-06-20",
         "toDate": "2025-07-22"
@@ -360,9 +353,8 @@
         "harborfreight": 3531
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-07-22",
         "toDate": "2025-08-20"
@@ -396,9 +388,8 @@
         "harborfreight": 3208
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-08-20",
         "toDate": "2025-09-18"
@@ -432,9 +423,8 @@
         "harborfreight": 3525
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-09-18",
         "toDate": "2025-10-17"
@@ -468,9 +458,15 @@
         "harborfreight": 3935
       },
       "status": "Invoiced",
-      "notes": "Nov 2025 city bill went unpaid at the time and drew a $12.03 late fee (Total Due shown as $252.66 on the invoice) — that late fee is NOT included in the water/sewer figure here, since it's not a water/sewer or FM charge to bill back to tenants.",
+      "noteEntries": [
+        {
+          "text": "Nov 2025 city bill went unpaid at the time and drew a $12.03 late fee (Total Due shown as $252.66 on the invoice) — that late fee is NOT included in the water/sewer figure here, since it's not a water/sewer or FM charge to bill back to tenants.",
+          "types": [
+            "billingNote"
+          ]
+        }
+      ],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2025-10-17",
         "toDate": "2025-11-14"
@@ -504,9 +500,15 @@
         "harborfreight": 4173
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [
+        {
+          "text": "Both the water/sewer and Fire Monitoring city invoices for this cycle are missing from your files (no bill numbered between #797911 and #831000). Water/sewer and FM charges here are interpolated from the surrounding Nov 2025 and Jan 2026 bills, on the same flat-rate bracket. Submeter reads for this period ARE on file (12/14/2025), so the tenant usage split itself is real, only the dollar total is estimated. Unlike March 2026, Leigh Ann's emails don't mention this gap directly — worth flagging to her too.",
+          "types": [
+            "estimateNote"
+          ]
+        }
+      ],
       "estimated": true,
-      "estimateNote": "Both the water/sewer and Fire Monitoring city invoices for this cycle are missing from your files (no bill numbered between #797911 and #831000). Water/sewer and FM charges here are interpolated from the surrounding Nov 2025 and Jan 2026 bills, on the same flat-rate bracket. Submeter reads for this period ARE on file (12/14/2025), so the tenant usage split itself is real, only the dollar total is estimated. Unlike March 2026, Leigh Ann's emails don't mention this gap directly — worth flagging to her too.",
       "readingBracket": {
         "fromDate": "2025-11-14",
         "toDate": "2025-12-14"
@@ -540,9 +542,15 @@
         "harborfreight": 5175
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [
+        {
+          "text": "The City's water/sewer and Fire Monitoring invoices for this cycle are missing from your files (same gap pattern as the Feb–Mar 2026 cycle). Water/sewer and FM charges here are interpolated from the surrounding Nov–Dec 2025 and Jan–Feb 2026 bills, the same method originally used for March. Leigh Ann confirmed (8/5/26) that there's no invoice on file for this period and that the amount actually paid to the City was only around $1.25 — not a plausible total for a full water/sewer + FM cycle, so it isn't used here; the interpolated estimate above is kept as the billed figure. Submeter usage for this period comes from real readings on file.",
+          "types": [
+            "estimateNote"
+          ]
+        }
+      ],
       "estimated": true,
-      "estimateNote": "The City's water/sewer and Fire Monitoring invoices for this cycle are missing from your files (same gap pattern as the Feb–Mar 2026 cycle). Water/sewer and FM charges here are interpolated from the surrounding Nov–Dec 2025 and Jan–Feb 2026 bills, the same method originally used for March. Leigh Ann confirmed (8/5/26) that there's no invoice on file for this period and that the amount actually paid to the City was only around $1.25 — not a plausible total for a full water/sewer + FM cycle, so it isn't used here; the interpolated estimate above is kept as the billed figure. Submeter usage for this period comes from real readings on file.",
       "readingBracket": {
         "fromDate": "2025-12-14",
         "toDate": "2026-01-15"
@@ -576,9 +584,8 @@
         "harborfreight": 3352
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2026-01-15",
         "toDate": "2026-02-13"
@@ -612,9 +619,15 @@
         "harborfreight": 4289
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [
+        {
+          "text": "The City's water/sewer invoice for this cycle is missing from your files (sequence jumps from the Feb 26, 2026 bill straight to Apr 29, 2026) — Leigh Ann's 6/25 follow-up email confirmed this and said the amount actually paid to the City was $118.34, so that figure is used here as the real total (not a guess), with the Water/Tax/Sewer/Authority/Solid-Waste breakdown estimated proportionally from the surrounding Feb/Apr 2026 rate structure since the itemized invoice isn't available. The Fire Monitoring charge for this cycle IS from an actual invoice (#864122, $15.98) — only the water/sewer breakdown is estimated. Submeter usage for this period comes from real readings on file.",
+          "types": [
+            "estimateNote"
+          ]
+        }
+      ],
       "estimated": true,
-      "estimateNote": "The City's water/sewer invoice for this cycle is missing from your files (sequence jumps from the Feb 26, 2026 bill straight to Apr 29, 2026) — Leigh Ann's 6/25 follow-up email confirmed this and said the amount actually paid to the City was $118.34, so that figure is used here as the real total (not a guess), with the Water/Tax/Sewer/Authority/Solid-Waste breakdown estimated proportionally from the surrounding Feb/Apr 2026 rate structure since the itemized invoice isn't available. The Fire Monitoring charge for this cycle IS from an actual invoice (#864122, $15.98) — only the water/sewer breakdown is estimated. Submeter usage for this period comes from real readings on file.",
       "readingBracket": {
         "fromDate": "2026-02-13",
         "toDate": "2026-03-17"
@@ -648,9 +661,8 @@
         "harborfreight": 3572
       },
       "status": "Invoiced",
-      "notes": "",
+      "noteEntries": [],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2026-03-17",
         "toDate": "2026-04-14"
@@ -684,9 +696,15 @@
         "harborfreight": 4182
       },
       "status": "Invoiced",
-      "notes": "Meter swapped mid-cycle (old meter #06046128 retired at 1935, replaced by #93240428) — no impact on the billed usage/amount.",
+      "noteEntries": [
+        {
+          "text": "Meter swapped mid-cycle (old meter #06046128 retired at 1935, replaced by #93240428) — no impact on the billed usage/amount.",
+          "types": [
+            "billingNote"
+          ]
+        }
+      ],
       "estimated": false,
-      "estimateNote": "",
       "readingBracket": {
         "fromDate": "2026-04-14",
         "toDate": "2026-05-15"
