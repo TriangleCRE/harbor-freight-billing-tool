@@ -235,13 +235,22 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 
 /* print area hidden on screen */
 #printArea{display:none;}
+/* Reserve the page margin here (0.5in) instead of also padding .pdf-page --
+   doing both at once made the printed box (7.5in content + .5in padding on
+   each side = 8.5in, exactly the full sheet) wider than the printable area
+   once the browser's own page margins were added on top, which forced
+   Chrome's print preview to auto-shrink the whole page to fit -- that's
+   what was making every PDF come out with tiny text. size:letter keeps
+   this correct even if a browser's print default is A4. */
+@page{size:letter;margin:.5in;}
 @media print{
+  html,body{margin:0;}
   body *{visibility:hidden;}
   #printArea, #printArea *{visibility:visible;}
   #printArea{display:block !important;position:absolute;left:0;top:0;width:100%;}
   .no-print{display:none !important;}
 }
-.pdf-page{width:7.5in;margin:0 auto;padding:.5in;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#1f2430;page-break-after:always;}
+.pdf-page{width:100%;box-sizing:border-box;margin:0 auto;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#1f2430;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .pdf-page:last-child{page-break-after:auto;}
 .pdf-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:14px;margin-bottom:16px;}
 .pdf-head img.pdf-logo{height:38px;object-fit:contain;}
@@ -515,7 +524,10 @@ table.bills-table .row-actions a.del{color:var(--danger);}
   </div>
 
   <div class="card">
-    <div class="eyebrow">Tenant statements</div>
+    <div class="row between wrap">
+      <div class="eyebrow">Tenant statements</div>
+      <button class="small primary" id="genAllStmt">Generate all tenants (one PDF, one per page)</button>
+    </div>
     <p class="small-note">A statement gathers every <b>unpaid</b> bill for a tenant (anything not marked Paid) into one PDF with a running total. Bills you mark Paid drop off automatically.</p>
     <div class="hr"></div>
     <table class="data greenhead">
@@ -1550,6 +1562,17 @@ function renderStatementsTab(){
   renderTenantRoster();
   renderStatementRoster();
 }
+// One PDF, one statement page per tenant -- same content as clicking
+// "Statement PDF" on every roster row individually, just batched. Includes
+// every tenant (even ones with no open balance right now, shown as "No
+// open balances" on their page) so the output is a consistent full mailing
+// packet rather than a variable subset.
+function allStatementsHtml(){
+  return STATE.tenants.map(t=>consolidatedStatementHtml(t)).join('');
+}
+document.getElementById('genAllStmt').addEventListener('click', ()=>{
+  printHtml(allStatementsHtml());
+});
 
 /* ---------- AI Import panel ---------- */
 function buildAiPrompt(){
