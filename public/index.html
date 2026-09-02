@@ -152,7 +152,6 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 
 .flag-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 9px;border-radius:6px;margin:2px 4px 2px 0;font-weight:600;}
 .flag-chip.est{background:var(--warn-light);color:var(--warn);}
-.flag-chip.leak{background:var(--danger-light);color:var(--danger);}
 .flag-chip.spike{background:#fdf3e0;color:#8a5a00;}
 .flag-chip.back{background:var(--danger-light);color:var(--danger);}
 .flag-chip.ok{background:var(--accent-light);color:var(--accent-dark);}
@@ -219,11 +218,6 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 .total-pill{background:var(--accent-light);border:1px solid #c9ecd3;border-radius:8px;padding:7px 14px;display:flex;flex-direction:column;align-items:flex-end;min-width:130px;}
 .total-pill .lbl{font-size:10.5px;color:var(--accent-dark);text-transform:uppercase;font-weight:800;letter-spacing:.03em;}
 .total-pill .val{font-size:17px;font-weight:800;color:var(--accent-dark);}
-
-.recon-line{display:flex;align-items:center;gap:14px;padding:10px 14px;background:#fafbfc;border:1px dashed var(--border);border-radius:8px;font-size:12.5px;color:var(--muted);margin-top:10px;flex-wrap:wrap;}
-.recon-line b{color:var(--ink);}
-.recon-line.flagged{border-color:var(--warn);background:var(--warn-light);color:var(--warn);}
-.recon-line.flagged b{color:var(--warn);}
 
 .bracket-banner{padding:9px 12px;background:var(--accent-light);border:1px solid #c9ecd3;border-radius:8px;font-size:12.5px;color:var(--accent-dark);margin-bottom:12px;}
 .bracket-banner.approx{background:var(--warn-light);border-color:#f0dba8;color:var(--warn);}
@@ -433,7 +427,6 @@ table.bills-table .row-actions a.del{color:var(--danger);}
       <tbody id="splitTbody"></tbody>
     </table>
     <div id="flagsPanel" style="margin-top:12px;"></div>
-    <div id="reconLine"></div>
   </div>
 
   <div class="card">
@@ -643,21 +636,26 @@ function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.get
 function addDaysISO(s, n){ const d=parseD(s); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function uid(prefix){ return prefix+'_'+Math.random().toString(36).slice(2,9); }
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function positionHoverTip(tip, e){
+  const pad = 16;
+  let x = e.clientX+pad, y = e.clientY+pad;
+  if(x + 240 > window.innerWidth) x = e.clientX - 240;
+  tip.style.left = x+'px';
+  tip.style.top = y+'px';
+}
 function attachHoverTip(el, getHtml){
   const tip = document.getElementById('tstripTooltip');
-  el.addEventListener('mouseenter', ()=>{
+  el.addEventListener('mouseenter', (e)=>{
     const html = getHtml();
     if(!html){ return; }
     tip.innerHTML = html;
+    // Position immediately on entry, not just on the first mousemove --
+    // otherwise the tooltip can appear at wherever it was last shown (or
+    // 0,0) for a frame before the next mousemove event corrects it.
+    positionHoverTip(tip, e);
     tip.classList.add('show');
   });
-  el.addEventListener('mousemove', (e)=>{
-    const pad = 16;
-    let x = e.clientX+pad, y = e.clientY+pad;
-    if(x + 240 > window.innerWidth) x = e.clientX - 240;
-    tip.style.left = x+'px';
-    tip.style.top = y+'px';
-  });
+  el.addEventListener('mousemove', (e)=>{ positionHoverTip(tip, e); });
   el.addEventListener('mouseleave', ()=>{ tip.classList.remove('show'); });
 }
 function showToast(msg){
@@ -740,14 +738,6 @@ function computeSplit(bill){
   return { waterTotal, fmTotal, grand: round2(waterTotal+fmTotal), totalUsage, totalSqft, totalFmPct, eligibleRows, ineligibleRows };
 }
 
-function reconciliation(bill){
-  const sumSub = STATE.tenants.reduce((s,t)=>s + ((bill.usage&&bill.usage[t.id])||0), 0);
-  const master = bill.masterUsage||0;
-  const diff = sumSub - master;
-  const pct = master>0 ? diff/master : (sumSub>0?1:0);
-  return { sumSub, master, diff, pct };
-}
-
 /* ---------- Flags ---------- */
 function tenantHistory(tenantId, beforePeriodEnd){
   return STATE.bills
@@ -761,10 +751,6 @@ function computeFlags(bill){
   if(bill.estimated){
     const en = estimateNoteText(bill);
     flags.push({type:'est', label:'Estimated period'+(en?(' — '+en):'')});
-  }
-  const recon = reconciliation(bill);
-  if(recon.master>0 && Math.abs(recon.pct) > 0.10){
-    flags.push({type:'leak', label:'Submeters vs. master variance '+(recon.pct>=0?'+':'')+fmtPct(recon.pct)+' ('+fmtNum(recon.sumSub)+' gal submetered vs '+fmtNum(recon.master)+' gal master) — reference only, not billed'});
   }
   STATE.tenants.forEach(t=>{
     const u = bill.usage ? bill.usage[t.id] : null;
@@ -1065,15 +1051,6 @@ function refreshComputed(){
   document.getElementById('fGrandTotal').textContent = fmtMoney(grandTotal(b));
 
   document.getElementById('flagsPanel').innerHTML = flagsHtml(computeFlags(b));
-  const recon = reconciliation(b);
-  const reconDiv = document.getElementById('reconLine');
-  const flagged = recon.master>0 && Math.abs(recon.pct)>0.10;
-  reconDiv.innerHTML = `<div class="recon-line ${flagged?'flagged':''}">
-    <span>Reconciliation (reference only — not billed):</span>
-    <span>Master meter: <b>${fmtNum(recon.master)} gal</b></span>
-    <span>Submeters total: <b>${fmtNum(recon.sumSub)} gal</b></span>
-    <span>Variance: <b>${(recon.pct>=0?'+':'')+fmtPct(recon.pct)}</b></span>
-  </div>`;
   renderSplitTable();
   renderMemos();
   renderInvoiceButtons();
@@ -1341,7 +1318,7 @@ function renderAllBills(){
     // entry hidden entirely (all its tags filtered out) contributes 0.
     const visibleTagCount = visible.reduce((n,e)=>n+e.types.length, 0);
     const notesCellHtml = visible.length
-      ? visible.map(e=>`<div class="note-entry" title="${escapeHtml(e.text)}"><span class="note-text">${escapeHtml(e.text)}</span><span class="note-pills">${noteEntryPillsHtml(e)}</span></div>`).join('')
+      ? visible.map(e=>`<div class="note-entry" data-tip="${escapeHtml(e.text)}"><span class="note-text">${escapeHtml(e.text)}</span><span class="note-pills">${noteEntryPillsHtml(e)}</span></div>`).join('')
       : (allEntries.length ? `<span class="nf-empty">${allEntries.length} note(s) hidden by filter</span>` : `<span class="nf-empty">No notes</span>`);
     return `<tr>
       <td><div class="period-cell"><button class="period-link open-bill" data-id="${b.id}">${fmtDateShort(b.periodStart)} – ${fmtDateShort(b.periodEnd)}</button>${realFlags.length?`<span class="flag-mark nf-flags" data-flags="${flagsTitle.replace(/"/g,'&quot;')}">🚩 ${realFlags.length}</span>`:''}${visibleTagCount?`<span class="flag-mark nf-tagcount">🏷 ${visibleTagCount}</span>`:''}</div></td>
@@ -1379,6 +1356,9 @@ function renderAllBills(){
   });
   tbody.querySelectorAll('.nf-flags').forEach(span=>{
     attachHoverTip(span, ()=> span.dataset.flags ? escapeHtml(span.dataset.flags).replace(/\n\n/g,'<br><br>') : '');
+  });
+  tbody.querySelectorAll('.note-entry').forEach(div=>{
+    attachHoverTip(div, ()=> div.dataset.tip ? escapeHtml(div.dataset.tip) : '');
   });
   tbody.querySelectorAll('.open-bill').forEach(btn=>{
     btn.addEventListener('click', ()=> openBillInSplitTab(btn.dataset.id));
