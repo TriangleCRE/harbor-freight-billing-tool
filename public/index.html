@@ -19,6 +19,10 @@
   --danger-light:#fbeceb;
   --warn:#a9720a;
   --warn-light:#fdf3e0;
+  --info:#2457a6;
+  --info-light:#e3edfb;
+  --lavender:#6c4fa1;
+  --lavender-light:#efeaf9;
   --radius:10px;
   --shadow:0 1px 2px rgba(20,20,30,0.04), 0 1px 8px rgba(20,20,30,0.04);
 }
@@ -128,10 +132,10 @@ table.bills-table .flag-mark{flex:none;margin-left:0;}
 table.bills-table .status-pill{border-radius:20px;background:#eef0f2;font-weight:700;padding:6px 14px;border:1px solid var(--border);width:auto;min-width:104px;}
 table.bills-table td.num{font-size:14.5px;white-space:nowrap;}
 table.bills-table td.notesflags-cell{max-width:0;}
-table.bills-table .nf-row{display:flex;align-items:center;gap:8px;min-width:0;}
+table.bills-table .nf-row{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;}
 table.bills-table .nf-flags{flex:none;font-size:12px;font-weight:700;color:var(--warn);background:var(--warn-light);border-radius:5px;padding:3px 7px;cursor:default;white-space:nowrap;}
-table.bills-table .notes-inline{border:none;background:transparent;flex:1;min-width:0;font-size:13px;padding:4px 0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;}
-table.bills-table .notes-inline:focus{white-space:normal;text-overflow:clip;position:relative;}
+table.bills-table .nf-tagcount{flex:none;font-size:12px;font-weight:700;color:var(--muted);background:#eef0f2;border-radius:5px;padding:3px 7px;cursor:default;white-space:nowrap;}
+table.bills-table .nf-empty{color:var(--muted-light);font-size:12.5px;}
 table.bills-table .row-actions{display:flex;gap:8px;align-items:center;white-space:nowrap;}
 table.bills-table .row-actions a{font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;text-decoration:none;}
 table.bills-table .row-actions a:hover{color:var(--accent-dark);text-decoration:underline;}
@@ -152,6 +156,29 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 .flag-chip.spike{background:#fdf3e0;color:#8a5a00;}
 .flag-chip.back{background:var(--danger-light);color:var(--danger);}
 .flag-chip.ok{background:var(--accent-light);color:var(--accent-dark);}
+
+/* Note-entry tag pills (estimateNote / billingNote / yardiNote) -- distinct
+   from the computed .flag-chip warnings above. Each pill is one tag on one
+   note entry, so an entry with two types renders two pills side by side. */
+.type-pill{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;}
+.type-pill.estimateNote{background:var(--warn-light);color:var(--warn);}
+.type-pill.billingNote{background:var(--info-light);color:var(--info);}
+.type-pill.yardiNote{background:var(--lavender-light);color:var(--lavender);}
+.note-entry{display:flex;align-items:flex-start;gap:6px;flex-wrap:nowrap;padding:3px 0;font-size:13px;min-width:0;}
+.note-entry .note-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.note-entry .note-pills{display:flex;gap:4px;flex:none;}
+.note-tag-filter{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);}
+.note-tag-filter label{display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:600;}
+.note-editor .entry-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.note-editor .entry-row:last-child{border-bottom:none;}
+.note-editor .entry-text{flex:1;font-size:13px;padding:2px 0;}
+.note-editor .entry-types{display:flex;gap:10px;flex:none;font-size:11.5px;color:var(--muted);}
+.note-editor .entry-types label{display:flex;align-items:center;gap:3px;cursor:pointer;white-space:nowrap;}
+.note-editor .entry-remove{flex:none;color:var(--danger);cursor:pointer;font-size:12.5px;font-weight:600;}
+.note-editor .add-row{display:flex;gap:8px;align-items:flex-start;margin-top:8px;}
+.note-editor .add-row textarea{flex:1;}
+.note-editor .add-types{display:flex;flex-direction:column;gap:4px;flex:none;font-size:11.5px;color:var(--muted);padding-top:4px;}
+.note-editor .add-types label{display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap;}
 
 .hr{height:1px;background:var(--border);margin:16px 0;border:none;}
 .row{display:flex;align-items:center;gap:10px;}
@@ -349,14 +376,23 @@ table.bills-table .row-actions a.del{color:var(--danger);}
       </div>
       <div class="field" style="margin-top:10px;">
         <label>Notes</label>
-        <textarea id="fNotes" rows="2" placeholder="Anything notable about this bill..."></textarea>
+        <div class="note-editor" id="fNoteEntries"></div>
+        <div class="add-row">
+          <textarea id="fNewNoteText" rows="2" placeholder="Add a note..."></textarea>
+          <div class="add-types">
+            <label><input type="checkbox" class="fNewNoteType" value="estimateNote"> Estimate</label>
+            <label><input type="checkbox" class="fNewNoteType" value="billingNote"> Billing</label>
+            <label><input type="checkbox" class="fNewNoteType" value="yardiNote"> Yardi</label>
+            <button class="small" id="btnAddNoteEntry" type="button" style="margin-top:4px;">Add</button>
+          </div>
+        </div>
       </div>
       <div class="field" style="margin-top:10px;">
         <label style="display:flex;align-items:center;gap:6px;text-transform:none;font-weight:600;font-size:13px;cursor:pointer;">
           <input type="checkbox" id="fEstimated">
           Estimated period (city invoice missing for this cycle)
         </label>
-        <textarea id="fEstimateNote" rows="2" style="margin-top:6px;" placeholder="Explain what's estimated and why (shown on statements &amp; invoices)..."></textarea>
+        <p class="small-note" style="margin-top:4px;">Explain what's estimated and why in a note above, tagged <b>Estimate</b> — that text is what shows on statements &amp; invoices. Checking this box and tagging a note Estimate stay in sync automatically.</p>
       </div>
 
       <div class="row" style="margin-top:14px;">
@@ -430,6 +466,12 @@ table.bills-table .row-actions a.del{color:var(--danger);}
           <option>Draft</option><option>Split</option><option>Invoiced</option><option>Paid</option>
         </select>
       </div>
+    </div>
+    <div class="note-tag-filter" style="margin-top:8px;">
+      <span>Show notes tagged:</span>
+      <label><input type="checkbox" class="note-tag-cb" data-type="estimateNote" checked> <span class="type-pill estimateNote">Estimate</span></label>
+      <label><input type="checkbox" class="note-tag-cb" data-type="billingNote" checked> <span class="type-pill billingNote">Billing</span></label>
+      <label><input type="checkbox" class="note-tag-cb" data-type="yardiNote" checked> <span class="type-pill yardiNote">Yardi</span></label>
     </div>
     <div class="hr"></div>
     <table class="data greenhead bills-table">
@@ -717,7 +759,8 @@ function tenantHistory(tenantId, beforePeriodEnd){
 function computeFlags(bill){
   const flags = [];
   if(bill.estimated){
-    flags.push({type:'est', label:'Estimated period'+(bill.estimateNote?(' — '+bill.estimateNote):'')});
+    const en = estimateNoteText(bill);
+    flags.push({type:'est', label:'Estimated period'+(en?(' — '+en):'')});
   }
   const recon = reconciliation(bill);
   if(recon.master>0 && Math.abs(recon.pct) > 0.10){
@@ -820,15 +863,25 @@ function blankBill(){
     fm:{city:0,tax:0},
     masterUsage:0,
     usage,
-    status:'Draft', notes:'',
-    estimated:false, estimateNote:'',
+    status:'Draft', noteEntries:[],
+    estimated:false,
     readingBracket:{fromDate:'',toDate:''}
   };
 }
 function startDraftFromBill(bill){ draftBill = JSON.parse(JSON.stringify(bill)); draftBillId = bill.id; }
 function startNewDraft(){ draftBill = blankBill(); draftBillId = null; }
 
-const formIds = ['fPeriodStart','fPeriodEnd','fWaterCity','fWaterTax','fSewer','fAuthority','fSolidWaste','fSeasonal','fMasterUsage','fFmCity','fFmTax','fStatus','fNotes','fEstimated','fEstimateNote'];
+const formIds = ['fPeriodStart','fPeriodEnd','fWaterCity','fWaterTax','fSewer','fAuthority','fSolidWaste','fSeasonal','fMasterUsage','fFmCity','fFmTax','fStatus','fEstimated'];
+
+/* ---------- Note entries (estimateNote / billingNote / yardiNote) ---------- */
+const NOTE_TYPES = ['estimateNote','billingNote','yardiNote'];
+const NOTE_TYPE_LABELS = {estimateNote:'Estimate', billingNote:'Billing', yardiNote:'Yardi'};
+// Text of a bill's estimateNote-tagged entries, joined -- the single place
+// that reads "the estimate explanation" so PDF/statement code and the est
+// flag don't each re-implement this.
+function estimateNoteText(bill){
+  return (bill.noteEntries||[]).filter(e=>e.types.includes('estimateNote')).map(e=>e.text).join(' | ');
+}
 
 function loadDraftIntoForm(){
   const b = draftBill;
@@ -847,12 +900,85 @@ function loadDraftIntoForm(){
   document.getElementById('fFmCity').value = b.fm.city||0;
   document.getElementById('fFmTax').value = b.fm.tax||0;
   document.getElementById('fStatus').value = b.status||'Draft';
-  document.getElementById('fNotes').value = b.notes||'';
   document.getElementById('fEstimated').checked = !!b.estimated;
-  document.getElementById('fEstimateNote').value = b.estimateNote||'';
+  renderNoteEntryEditor();
   renderReadingPickers();
   refreshComputed();
 }
+
+// Renders the note-entries list in the bill editor: each entry as text +
+// its type checkboxes + a remove link, reading/writing draftBill.noteEntries
+// directly (mirrors how the rest of the editor treats draftBill as the
+// working copy -- readFormIntoDraft() doesn't need to touch this field).
+function renderNoteEntryEditor(){
+  const b = draftBill;
+  if(!Array.isArray(b.noteEntries)) b.noteEntries = [];
+  const wrap = document.getElementById('fNoteEntries');
+  if(!b.noteEntries.length){
+    wrap.innerHTML = '<p class="small-note">No notes on this bill yet.</p>';
+  } else {
+    wrap.innerHTML = b.noteEntries.map((entry, i)=>`
+      <div class="entry-row" data-i="${i}">
+        <div class="entry-text">${escapeHtml(entry.text)}</div>
+        <div class="entry-types">
+          ${NOTE_TYPES.map(t=>`<label><input type="checkbox" class="entry-type-cb" data-i="${i}" data-type="${t}" ${entry.types.includes(t)?'checked':''}> ${NOTE_TYPE_LABELS[t]}</label>`).join('')}
+        </div>
+        <a class="entry-remove" data-i="${i}">Remove</a>
+      </div>
+    `).join('');
+  }
+  wrap.querySelectorAll('.entry-type-cb').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const i = parseInt(cb.dataset.i,10);
+      const entry = b.noteEntries[i];
+      if(cb.checked){ if(!entry.types.includes(cb.dataset.type)) entry.types.push(cb.dataset.type); }
+      else { entry.types = entry.types.filter(t=>t!==cb.dataset.type); }
+      syncEstimatedFromNotes();
+      renderNoteEntryEditor();
+    });
+  });
+  wrap.querySelectorAll('.entry-remove').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      b.noteEntries.splice(parseInt(a.dataset.i,10), 1);
+      syncEstimatedFromNotes();
+      renderNoteEntryEditor();
+    });
+  });
+}
+// Keeps the Estimated checkbox and any estimateNote-tagged entry from
+// contradicting each other: a row should never end up tagged estimateNote
+// with estimated=false. Checking Estimated with no estimateNote entry is
+// still valid (same as the old behavior of checking the box with no
+// explanation text) -- this only enforces the one invalid direction.
+function syncEstimatedFromNotes(){
+  const b = draftBill;
+  const hasEstimateTag = (b.noteEntries||[]).some(e=>e.types.includes('estimateNote'));
+  if(hasEstimateTag) document.getElementById('fEstimated').checked = true;
+}
+document.getElementById('fEstimated').addEventListener('change', (e)=>{
+  if(!e.target.checked){
+    // Unchecking Estimated strips the estimateNote tag from every entry --
+    // fully removing entries that have no other tag left, since their text
+    // was specifically the estimate explanation and isn't useful untagged.
+    const b = draftBill;
+    b.noteEntries = (b.noteEntries||[])
+      .map(entry=> entry.types.includes('estimateNote') ? {text:entry.text, types:entry.types.filter(t=>t!=='estimateNote')} : entry)
+      .filter(entry=> entry.types.length>0);
+    renderNoteEntryEditor();
+  }
+});
+document.getElementById('btnAddNoteEntry').addEventListener('click', ()=>{
+  const textEl = document.getElementById('fNewNoteText');
+  const text = textEl.value.trim();
+  if(!text) return;
+  const types = Array.from(document.querySelectorAll('.fNewNoteType:checked')).map(cb=>cb.value);
+  draftBill.noteEntries = draftBill.noteEntries || [];
+  draftBill.noteEntries.push({text, types});
+  textEl.value = '';
+  document.querySelectorAll('.fNewNoteType').forEach(cb=>cb.checked=false);
+  syncEstimatedFromNotes();
+  renderNoteEntryEditor();
+});
 
 function readFormIntoDraft(){
   const b = draftBill;
@@ -869,9 +995,10 @@ function readFormIntoDraft(){
   b.masterUsage = parseFloat(document.getElementById('fMasterUsage').value)||0;
   b.fm = { city: parseFloat(document.getElementById('fFmCity').value)||0, tax: parseFloat(document.getElementById('fFmTax').value)||0 };
   b.status = document.getElementById('fStatus').value;
-  b.notes = document.getElementById('fNotes').value;
   b.estimated = document.getElementById('fEstimated').checked;
-  b.estimateNote = document.getElementById('fEstimateNote').value;
+  // b.noteEntries is mutated in place by the note editor's add/remove/tag
+  // handlers (see renderNoteEntryEditor) -- nothing to read from the DOM
+  // here, unlike the old single fNotes/fEstimateNote textareas.
 }
 
 function renderReadingPickers(){
@@ -1117,7 +1244,7 @@ function tenantInvoiceHtml(bill, tenant){
       </tbody>
     </table>
     <div class="pdf-total-callout"><div class="lbl">Total due</div><div class="val">${fmtMoney(row.total)}</div></div>
-    <div class="pdf-footer-note"><b>Remit to:</b> Triangle Investments / TAP LLC, 2903 N Augusta St, Staunton, VA 24401.${bill.estimated?' This period includes estimated figures — '+(bill.estimateNote||'city invoice unavailable for this cycle')+'.':' Questions about this invoice can be directed to your property manager.'}</div>
+    <div class="pdf-footer-note"><b>Remit to:</b> Triangle Investments / TAP LLC, 2903 N Augusta St, Staunton, VA 24401.${bill.estimated?' This period includes estimated figures — '+(estimateNoteText(bill)||'city invoice unavailable for this cycle')+'.':' Questions about this invoice can be directed to your property manager.'}</div>
   </div>`;
 }
 function renderInvoiceButtons(){
@@ -1183,6 +1310,17 @@ function openBillInSplitTab(id){
   document.querySelector('nav.tabs button[data-tab="split"]').click();
   loadDraftIntoForm();
 }
+// Which note tags are currently visible in the All Bills table. All three
+// on by default; unchecking one (e.g. Yardi) hides only entries whose tags
+// are entirely filtered out, per-entry -- an entry that also carries a
+// still-visible tag stays visible (see visibleNoteEntries below).
+let noteTagFilter = {estimateNote:true, billingNote:true, yardiNote:true};
+function visibleNoteEntries(bill){
+  return (bill.noteEntries||[]).filter(e=> e.types.length===0 || e.types.some(t=>noteTagFilter[t]));
+}
+function noteEntryPillsHtml(entry){
+  return entry.types.map(t=>`<span class="type-pill ${t}">${NOTE_TYPE_LABELS[t]}</span>`).join('');
+}
 function renderAllBills(){
   const filter = document.getElementById('allStatusFilter').value;
   const tbody = document.getElementById('allBillsTbody');
@@ -1197,8 +1335,16 @@ function renderAllBills(){
     if(parseD(b.periodEnd) && parseD(b.periodEnd).getFullYear()===nowYear) totalYtd+=g;
     if(b.status!=='Paid') totalOutstanding+=g;
     const flagsTitle = realFlags.map(f=>f.label).join('\n\n');
+    const allEntries = b.noteEntries||[];
+    const visible = visibleNoteEntries(b);
+    // Counts only tags on entries visible under the current filter -- an
+    // entry hidden entirely (all its tags filtered out) contributes 0.
+    const visibleTagCount = visible.reduce((n,e)=>n+e.types.length, 0);
+    const notesCellHtml = visible.length
+      ? visible.map(e=>`<div class="note-entry" title="${escapeHtml(e.text)}"><span class="note-text">${escapeHtml(e.text)}</span><span class="note-pills">${noteEntryPillsHtml(e)}</span></div>`).join('')
+      : (allEntries.length ? `<span class="nf-empty">${allEntries.length} note(s) hidden by filter</span>` : `<span class="nf-empty">No notes</span>`);
     return `<tr>
-      <td><div class="period-cell"><button class="period-link open-bill" data-id="${b.id}">${fmtDateShort(b.periodStart)} – ${fmtDateShort(b.periodEnd)}</button>${realFlags.length?`<span class="flag-mark nf-flags" data-flags="${flagsTitle.replace(/"/g,'&quot;')}">🚩 ${realFlags.length}</span>`:''}</div></td>
+      <td><div class="period-cell"><button class="period-link open-bill" data-id="${b.id}">${fmtDateShort(b.periodStart)} – ${fmtDateShort(b.periodEnd)}</button>${realFlags.length?`<span class="flag-mark nf-flags" data-flags="${flagsTitle.replace(/"/g,'&quot;')}">🚩 ${realFlags.length}</span>`:''}${visibleTagCount?`<span class="flag-mark nf-tagcount">🏷 ${visibleTagCount}</span>`:''}</div></td>
       <td class="num tnum">${fmtMoney(waterSubtotal(b))}</td>
       <td class="num tnum">${fmtMoney(fmSubtotal(b))}</td>
       <td class="num tnum" style="font-weight:700;">${fmtMoney(g)}</td>
@@ -1206,9 +1352,7 @@ function renderAllBills(){
             ${['Draft','Split','Invoiced','Paid'].map(s=>`<option ${s===b.status?'selected':''}>${s}</option>`).join('')}
           </select></td>
       <td class="notesflags-cell">
-        <div class="nf-row">
-          <input class="notes-inline" data-id="${b.id}" value="${(b.notes||'').replace(/"/g,'&quot;')}" placeholder="Add a note...">
-        </div>
+        <div class="nf-row">${notesCellHtml}</div>
       </td>
       <td><div class="row-actions">
         <a class="gen-inv-row" data-id="${b.id}">Invoices</a>
@@ -1233,15 +1377,7 @@ function renderAllBills(){
       if(draftBillId===b.id){ draftBill.status=b.status; document.getElementById('fStatus').value = b.status; }
     });
   });
-  tbody.querySelectorAll('.notes-inline').forEach(inp=>{
-    inp.addEventListener('change', async ()=>{
-      const b = billById(inp.dataset.id); b.notes = inp.value;
-      try{ await updateBillApi(b); persistOk(); }catch(e){ persistFail(e); }
-      if(draftBillId===b.id){ draftBill.notes=b.notes; document.getElementById('fNotes').value = b.notes; }
-    });
-    attachHoverTip(inp, ()=> inp.value ? escapeHtml(inp.value) : '');
-  });
-  tbody.querySelectorAll('.flag-mark').forEach(span=>{
+  tbody.querySelectorAll('.nf-flags').forEach(span=>{
     attachHoverTip(span, ()=> span.dataset.flags ? escapeHtml(span.dataset.flags).replace(/\n\n/g,'<br><br>') : '');
   });
   tbody.querySelectorAll('.open-bill').forEach(btn=>{
@@ -1272,6 +1408,12 @@ function renderAllBills(){
   });
 }
 document.getElementById('allStatusFilter').addEventListener('change', renderAllBills);
+document.querySelectorAll('.note-tag-cb').forEach(cb=>{
+  cb.addEventListener('change', ()=>{
+    noteTagFilter[cb.dataset.type] = cb.checked;
+    renderAllBills();
+  });
+});
 
 /* ---------- READINGS LOG tab ---------- */
 function renderAddReadingGrid(){
@@ -1484,7 +1626,10 @@ document.getElementById('btnApplyAiJson').addEventListener('click', ()=>{
   if(data.water) b.water = Object.assign({city:0,tax:0,sewer:0,authority:0,solidWaste:0,seasonal:0}, data.water);
   if(data.fm) b.fm = Object.assign({city:0,tax:0}, data.fm);
   if(data.masterUsage!=null) b.masterUsage = data.masterUsage;
-  if(data.notes) b.notes = (b.notes?b.notes+' | ':'')+data.notes;
+  if(data.notes){
+    b.noteEntries = b.noteEntries || [];
+    b.noteEntries.push({text: data.notes, types: ['billingNote']});
+  }
   if(data.reading && data.reading.date){
     const existing = STATE.readings.find(r=>r.date===data.reading.date);
     if(existing){

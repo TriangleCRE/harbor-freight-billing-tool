@@ -2,6 +2,7 @@
 
 const { query } = require("../lib/db");
 const { rowToBill } = require("../lib/mappers");
+const { normalizeNoteEntries } = require("../lib/noteEntries");
 const { requireAuth, readJsonBody, sendError, withErrorHandling } = require("../lib/apiUtil");
 
 // PUT    /api/bill?id=xxx  -> update an existing bill (full replace)
@@ -21,7 +22,7 @@ module.exports = withErrorHandling(async (req, res) => {
       `UPDATE bills SET
         period_start = $2, period_end = $3, invoice_date = $4, due_date = $5,
         water = $6, fm = $7, master_usage = $8, usage = $9, status = $10,
-        notes = $11, estimated = $12, estimate_note = $13, reading_bracket = $14
+        estimated = $11, note_entries = $12, reading_bracket = $13
        WHERE id = $1
        RETURNING *`,
       [
@@ -35,9 +36,8 @@ module.exports = withErrorHandling(async (req, res) => {
         b.masterUsage || 0,
         JSON.stringify(b.usage || {}),
         b.status || "Draft",
-        b.notes || "",
         !!b.estimated,
-        b.estimateNote || "",
+        JSON.stringify(normalizeNoteEntries(b)),
         JSON.stringify(b.readingBracket || { fromDate: "", toDate: "" }),
       ]
     );
