@@ -73,7 +73,7 @@
       "fmPct": 0.0671,
       "leaseFrom": "2024-04-15",
       "leaseTo": "2029-04-30",
-      "billedFrom": null,
+      "billedFrom": "2025-01-01",
       "requireExplicitStart": true,
       "meterUnconfirmed": false,
       "logoKey": "ataka"
