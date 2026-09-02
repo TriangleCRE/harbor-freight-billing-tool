@@ -1,84 +1,4 @@
 {
-  "tenants": [
-    {
-      "id": "harborfreight",
-      "name": "Harbor Freight Tools #527",
-      "meterLabel": "Suite 106 / Unit 106",
-      "sqft": 15922,
-      "fmPct": 0.6122,
-      "leaseFrom": "2014-11-11",
-      "leaseTo": "2034-11-30",
-      "billedFrom": null,
-      "requireExplicitStart": false,
-      "meterUnconfirmed": false,
-      "logoKey": "harborfreight"
-    },
-    {
-      "id": "geico",
-      "name": "GEICO (John Edwards)",
-      "meterLabel": "Suite 102 / Unit 102",
-      "sqft": 1300,
-      "fmPct": 0.077,
-      "leaseFrom": "2016-09-01",
-      "leaseTo": null,
-      "billedFrom": null,
-      "requireExplicitStart": false,
-      "meterUnconfirmed": false,
-      "logoKey": "geico"
-    },
-    {
-      "id": "ezmassage",
-      "name": "EZ Massage",
-      "meterLabel": "Suite 103 / Unit 103",
-      "sqft": 750,
-      "fmPct": 0.03,
-      "leaseFrom": "2021-08-01",
-      "leaseTo": "2027-07-31",
-      "billedFrom": null,
-      "requireExplicitStart": false,
-      "meterUnconfirmed": false,
-      "logoKey": "ezmassage"
-    },
-    {
-      "id": "libertyarms",
-      "name": "Liberty Arms",
-      "meterLabel": "Suite 104 / Unit 104",
-      "sqft": 1800,
-      "fmPct": 0.1507,
-      "leaseFrom": "2018-11-21",
-      "leaseTo": "2026-11-30",
-      "billedFrom": null,
-      "requireExplicitStart": false,
-      "meterUnconfirmed": false,
-      "logoKey": "libertyarms"
-    },
-    {
-      "id": "secretlair",
-      "name": "Secret Lair Comics 2.0, LLC",
-      "meterLabel": "Suite 105 / Unit 105",
-      "sqft": 1650,
-      "fmPct": 0.063,
-      "leaseFrom": "2020-08-12",
-      "leaseTo": "2030-08-31",
-      "billedFrom": null,
-      "requireExplicitStart": false,
-      "meterUnconfirmed": false,
-      "logoKey": "secretlair"
-    },
-    {
-      "id": "ataka",
-      "name": "Ataka Industries, LLC",
-      "meterLabel": "Suite 101 / Unit 101 (formerly labeled \"storage closet\" — confirmed as Ataka Industries' meter)",
-      "sqft": 4000,
-      "fmPct": 0.0671,
-      "leaseFrom": "2024-04-15",
-      "leaseTo": "2029-04-30",
-      "billedFrom": null,
-      "requireExplicitStart": true,
-      "meterUnconfirmed": false,
-      "logoKey": "ataka"
-    }
-  ],
   "bills": [
     {
       "id": "bill_20250121",
@@ -108,8 +28,8 @@
         "harborfreight": 3876
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2024-12-20",
         "toDate": "2025-01-21"
@@ -143,8 +63,8 @@
         "harborfreight": 3425
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2025-01-21",
         "toDate": "2025-02-20"
@@ -178,8 +98,8 @@
         "harborfreight": 3017
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2025-02-20",
         "toDate": "2025-03-20"
@@ -213,8 +133,8 @@
         "harborfreight": 3585
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2025-03-20",
         "toDate": "2025-04-21"
@@ -248,8 +168,8 @@
         "harborfreight": 3274
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2025-04-21",
         "toDate": "2025-05-20"
@@ -283,8 +203,8 @@
         "harborfreight": 4706
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2025-05-20",
         "toDate": "2025-06-20"
@@ -318,6 +238,7 @@
         "harborfreight": 4587
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "City rate increase takes effect this cycle (water $33.30 / tax $6.66 / sewer $21.75 / authority $27.23 / solid waste $30.00). Seasonal charge $1.25 appears for the first time. FM flat charge rises $15.16 to $15.98.",
@@ -326,7 +247,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2025-06-20",
         "toDate": "2025-07-22"
@@ -360,6 +280,7 @@
         "harborfreight": 3531
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "Seasonal charge $1.75 this cycle (vs $1.25 in surrounding months) - the only reason the total differs from $120.19.",
@@ -368,7 +289,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2025-07-22",
         "toDate": "2025-08-20"
@@ -402,8 +322,8 @@
         "harborfreight": 3208
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2025-08-20",
         "toDate": "2025-09-18"
@@ -437,6 +357,7 @@
         "harborfreight": 3525
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "PAID LATE. Bill was due 11/24/25 but check 8066 was cut 11/18/25 and had not posted when the City ran its 11/14/25 billing cycle, so the balance rolled forward and the City assessed $13.63 of penalties on the next bill.",
@@ -445,7 +366,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2025-09-18",
         "toDate": "2025-10-17"
@@ -479,6 +399,7 @@
         "harborfreight": 3935
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "OVERSTATED IN YARDI. Booked under the second vendor record \"CITY OF HARRISONBURG\" (v10363), not \"City of Harrisonburg VA City Treas.\" (v10364). The amount keyed was the invoice Total Amount Due, which rolls in the unpaid October balance ($120.19 water / $15.98 FM) plus late penalties ($12.03 water / $1.60 FM). Actual current-period charges were $120.44 water / $15.98 FM, so this cycle is overstated by $149.80 and October is double-counted.",
@@ -487,7 +408,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2025-10-17",
         "toDate": "2025-11-14"
@@ -521,21 +441,21 @@
         "harborfreight": 4394
       },
       "status": "Invoiced",
+      "estimated": true,
       "noteEntries": [
         {
-          "text": "The water invoice was keyed into Yardi as a -$1.25 credit memo (the invoice Total Amount Due after November's overpayment) instead of the $118.94 of current-period charges, and that credit was reversed on 01/26/2026 — so $0.00 of December water/sewer expense is booked. Posted under vendor record v10363.",
+          "text": "The water invoice was keyed into Yardi as a -$1.25 credit memo (the invoice Total Amount Due after November's overpayment) instead of the $118.94 of current-period charges, and that credit was reversed on 01/26/2026 \u2014 so $0.00 of December water/sewer expense is booked. Posted under vendor record v10363.",
           "types": [
             "yardiNote"
           ]
         },
         {
-          "text": "No FM payable or invoice exists for this cycle in Yardi or in the emailed PDFs. The $15.98 shown is the flat charge billed in every adjacent cycle — the only estimated figure in this dataset.",
+          "text": "No FM payable or invoice exists for this cycle in Yardi or in the emailed PDFs. The $15.98 shown is the flat charge billed in every adjacent cycle \u2014 the only estimated figure in this dataset.",
           "types": [
             "estimateNote"
           ]
         }
       ],
-      "estimated": true,
       "readingBracket": {
         "fromDate": "2025-11-14",
         "toDate": "2025-12-15"
@@ -569,6 +489,7 @@
         "harborfreight": 4954
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "City rate increase (water $35.52 / tax $7.10 / sewer $23.20 / authority $29.05 / solid waste $30.00). Water current billing was $124.87; a -$1.25 account credit left over from the November overpayment brought the amount due - and the Yardi entry - to $123.62. Highest usage of the period at 8,000 gal.",
@@ -577,7 +498,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2025-12-15",
         "toDate": "2026-01-15"
@@ -611,8 +531,8 @@
         "harborfreight": 3352
       },
       "status": "Invoiced",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2026-01-15",
         "toDate": "2026-02-13"
@@ -646,9 +566,10 @@
         "harborfreight": 4136
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
-          "text": "Short pay: the City billed $118.94 but $118.34 was paid — a $0.60 shortfall that drew a $0.06 penalty on the April bill.",
+          "text": "Short pay: the City billed $118.94 but $118.34 was paid \u2014 a $0.60 shortfall that drew a $0.06 penalty on the April bill.",
           "types": [
             "billingNote"
           ]
@@ -660,7 +581,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2026-02-13",
         "toDate": "2026-03-16"
@@ -694,6 +614,7 @@
         "harborfreight": 3847
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "OVERSTATED BY $0.66. Current-period charges were $118.94; the Yardi amount also carries March's $0.60 shortfall and the $0.06 late penalty.",
@@ -702,7 +623,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2026-03-16",
         "toDate": "2026-04-15"
@@ -736,6 +656,7 @@
         "harborfreight": 4060
       },
       "status": "Invoiced",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "Water meter replaced during this cycle - old meter #06046128 final read 1935; new meter #93240428 starts at 0. Usage still billed at 7,000 gal.",
@@ -744,7 +665,6 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2026-04-15",
         "toDate": "2026-05-15"
@@ -778,8 +698,8 @@
         "harborfreight": 3859
       },
       "status": "Draft",
-      "noteEntries": [],
       "estimated": false,
+      "noteEntries": [],
       "readingBracket": {
         "fromDate": "2026-05-15",
         "toDate": "2026-06-15"
@@ -813,6 +733,7 @@
         "harborfreight": 3729
       },
       "status": "Draft",
+      "estimated": false,
       "noteEntries": [
         {
           "text": "City rate increase (water $35.33 / tax $7.07 / sewer $22.20 / authority $27.83 / solid waste $30.00) and seasonal charge $1.35 resumes. FM flat charge rises $15.98 to $16.96.",
@@ -821,212 +742,13 @@
           ]
         }
       ],
-      "estimated": false,
       "readingBracket": {
         "fromDate": "2026-06-15",
         "toDate": "2026-07-15"
       }
     }
   ],
-  "readings": [
-    {
-      "date": "2024-12-20",
-      "readings": {
-        "ataka": 244,
-        "geico": 97218,
-        "ezmassage": 91655,
-        "libertyarms": 74480,
-        "secretlair": 20057,
-        "harborfreight": 320939
-      }
-    },
-    {
-      "date": "2025-01-21",
-      "readings": {
-        "ataka": 274,
-        "geico": 97997,
-        "ezmassage": 93366,
-        "libertyarms": 75010,
-        "secretlair": 20584,
-        "harborfreight": 324815
-      }
-    },
-    {
-      "date": "2025-02-20",
-      "readings": {
-        "ataka": 371,
-        "geico": 98763,
-        "ezmassage": 94999,
-        "libertyarms": 75634,
-        "secretlair": 21112,
-        "harborfreight": 328240
-      }
-    },
-    {
-      "date": "2025-03-20",
-      "readings": {
-        "ataka": 405,
-        "geico": 99485,
-        "ezmassage": 96539,
-        "libertyarms": 76175,
-        "secretlair": 21699,
-        "harborfreight": 331257
-      }
-    },
-    {
-      "date": "2025-04-21",
-      "readings": {
-        "ataka": 486,
-        "geico": 100466,
-        "ezmassage": 98203,
-        "libertyarms": 76780,
-        "secretlair": 22339,
-        "harborfreight": 334842
-      }
-    },
-    {
-      "date": "2025-05-20",
-      "readings": {
-        "ataka": 552,
-        "geico": 101815,
-        "ezmassage": 99664,
-        "libertyarms": 77322,
-        "secretlair": 22896,
-        "harborfreight": 338116
-      }
-    },
-    {
-      "date": "2025-06-20",
-      "readings": {
-        "ataka": 582,
-        "geico": 103771,
-        "ezmassage": 101336,
-        "libertyarms": 78018,
-        "secretlair": 23525,
-        "harborfreight": 342822
-      }
-    },
-    {
-      "date": "2025-07-22",
-      "readings": {
-        "ataka": 753,
-        "geico": 105428,
-        "ezmassage": 103061,
-        "libertyarms": 78648,
-        "secretlair": 24231,
-        "harborfreight": 347409
-      }
-    },
-    {
-      "date": "2025-08-20",
-      "readings": {
-        "ataka": 942,
-        "geico": 107493,
-        "ezmassage": 104554,
-        "libertyarms": 79216,
-        "secretlair": 24909,
-        "harborfreight": 350940
-      }
-    },
-    {
-      "date": "2025-09-18",
-      "readings": {
-        "ataka": 1092,
-        "geico": 109815,
-        "ezmassage": 106174,
-        "libertyarms": 79760,
-        "secretlair": 25560,
-        "harborfreight": 354148
-      }
-    },
-    {
-      "date": "2025-10-17",
-      "readings": {
-        "ataka": 1295,
-        "geico": 111923,
-        "ezmassage": 107774,
-        "libertyarms": 80282,
-        "secretlair": 26292,
-        "harborfreight": 357673
-      }
-    },
-    {
-      "date": "2025-11-14",
-      "readings": {
-        "ataka": 1486,
-        "geico": 114604,
-        "ezmassage": 109020,
-        "libertyarms": 80787,
-        "secretlair": 27071,
-        "harborfreight": 361608
-      }
-    },
-    {
-      "date": "2025-12-14",
-      "readings": {
-        "ataka": 1570,
-        "geico": 116435,
-        "ezmassage": 110231,
-        "libertyarms": 81311,
-        "secretlair": 27807,
-        "harborfreight": 365781
-      }
-    },
-    {
-      "date": "2026-01-15",
-      "readings": {
-        "ataka": 1684,
-        "geico": 117129,
-        "ezmassage": 111846,
-        "libertyarms": 81853,
-        "secretlair": 28495,
-        "harborfreight": 370956
-      }
-    },
-    {
-      "date": "2026-02-13",
-      "readings": {
-        "ataka": 1788,
-        "geico": 117568,
-        "ezmassage": 113032,
-        "libertyarms": 82325,
-        "secretlair": 29178,
-        "harborfreight": 374308
-      }
-    },
-    {
-      "date": "2026-03-17",
-      "readings": {
-        "ataka": 2030,
-        "geico": 118045,
-        "ezmassage": 114623,
-        "libertyarms": 82928,
-        "secretlair": 30125,
-        "harborfreight": 378597
-      }
-    },
-    {
-      "date": "2026-04-14",
-      "readings": {
-        "ataka": 2187,
-        "geico": 118516,
-        "ezmassage": 116163,
-        "libertyarms": 83497,
-        "secretlair": 30859,
-        "harborfreight": 382169
-      }
-    },
-    {
-      "date": "2026-05-15",
-      "readings": {
-        "ataka": 2337,
-        "geico": 119121,
-        "ezmassage": 117932,
-        "libertyarms": 84158,
-        "secretlair": 31701,
-        "harborfreight": 386351
-      }
-    },
+  "newReadings": [
     {
       "date": "2025-12-15",
       "readings": {
