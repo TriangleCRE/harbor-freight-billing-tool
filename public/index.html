@@ -276,7 +276,14 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 .pdf-total-callout .val{font-size:30px;font-weight:800;margin-top:3px;}
 .pdf-tenant-block{display:flex;align-items:center;gap:10px;margin-bottom:10px;clear:both;}
 .pdf-tenant-block img{height:30px;object-fit:contain;}
-.pdf-footer-note{font-size:13px;color:#888;margin-top:16px;clear:both;border-top:1px solid #eee;padding-top:8px;}
+/* margin-top is oversized on purpose: this element clears the floated
+   .pdf-total-callout above it, and a cleared box's position is whichever
+   is taller of (its own margin-top) or (the clearance needed to drop below
+   the float) -- below ~100px here, the callout's height dominates and
+   margin-top has *zero* visible effect at all, verified empirically.
+   130px is calibrated to sit just past that threshold so it actually
+   pushes the remit line down toward the bottom of the page. */
+.pdf-footer-note{font-size:13px;color:#888;margin-top:130px;clear:both;border-top:1px solid #eee;padding-top:10px;}
 </style>
 </head>
 <body>
