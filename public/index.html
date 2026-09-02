@@ -242,7 +242,7 @@ table.bills-table .row-actions a.del{color:var(--danger);}
    Chrome's print preview to auto-shrink the whole page to fit -- that's
    what was making every PDF come out with tiny text. size:letter keeps
    this correct even if a browser's print default is A4. */
-@page{size:letter;margin:.5in;}
+@page{size:letter;margin:.4in;}
 @media print{
   html,body{margin:0;}
   body *{visibility:hidden;}
@@ -252,31 +252,31 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 }
 .pdf-page{width:100%;box-sizing:border-box;margin:0 auto;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#1f2430;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .pdf-page:last-child{page-break-after:auto;}
-.pdf-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:14px;margin-bottom:16px;}
+.pdf-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;margin-bottom:12px;}
 .pdf-head img.pdf-logo{height:64px;object-fit:contain;}
 .pdf-head .brandline{font-size:13.5px;color:#555;margin-top:6px;}
 .pdf-head .doctitle{text-align:right;}
 .pdf-head .doctitle .big{font-size:32px;font-weight:800;letter-spacing:.04em;}
-.pdf-head .doctitle .meta{font-size:14px;color:#555;line-height:1.7;margin-top:6px;}
-.pdf-rule{height:3px;background:#2da84e;border:none;margin:0 0 18px;}
-.pdf-info-grid{display:flex;gap:16px;margin-bottom:18px;}
-.pdf-info-box{flex:1;background:#eaf6ee;border-radius:7px;padding:14px 16px;}
-.pdf-info-box .lbl{font-size:12.5px;font-weight:800;color:#228241;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+.pdf-head .doctitle .meta{font-size:14px;color:#555;line-height:1.5;margin-top:6px;}
+.pdf-rule{height:3px;background:#2da84e;border:none;margin:0 0 14px;}
+.pdf-info-grid{display:flex;gap:16px;margin-bottom:14px;}
+.pdf-info-box{flex:1;background:#eaf6ee;border-radius:7px;padding:11px 15px;}
+.pdf-info-box .lbl{font-size:12.5px;font-weight:800;color:#228241;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;}
 .pdf-info-box .name{font-weight:700;font-size:17px;margin-bottom:2px;}
-.pdf-info-box div{font-size:15.5px;color:#333;line-height:1.6;}
+.pdf-info-box div{font-size:15.5px;color:#333;line-height:1.4;}
 .pdf-table{width:100%;border-collapse:collapse;margin:0 0 4px;}
-.pdf-table thead th{text-align:left;font-size:13.5px;text-transform:uppercase;letter-spacing:.03em;color:#fff;background:#2da84e;padding:10px 12px;}
+.pdf-table thead th{text-align:left;font-size:13.5px;text-transform:uppercase;letter-spacing:.03em;color:#fff;background:#2da84e;padding:8px 12px;}
 .pdf-table thead th.r{text-align:right;}
-.pdf-table td{padding:10px 12px;font-size:16px;border-bottom:1px solid #eee;}
+.pdf-table td{padding:8px 12px;font-size:16px;border-bottom:1px solid #eee;}
 .pdf-table td.r{text-align:right;}
-.pdf-table tr.total td{font-weight:800;border-top:2px solid #1f2430;border-bottom:none;font-size:18px;padding-top:12px;}
+.pdf-table tr.total td{font-weight:800;border-top:2px solid #1f2430;border-bottom:none;font-size:18px;padding-top:9px;}
 .pdf-est-tag{color:#b8860b;font-weight:700;font-size:13.5px;}
-.pdf-total-callout{background:#2da84e;color:#fff;border-radius:8px;padding:14px 22px;display:inline-block;text-align:right;float:right;margin-top:14px;}
+.pdf-total-callout{background:#2da84e;color:#fff;border-radius:8px;padding:11px 20px;display:inline-block;text-align:right;float:right;margin-top:10px;}
 .pdf-total-callout .lbl{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.9;}
 .pdf-total-callout .val{font-size:30px;font-weight:800;margin-top:3px;}
 .pdf-tenant-block{display:flex;align-items:center;gap:10px;margin-bottom:10px;clear:both;}
 .pdf-tenant-block img{height:30px;object-fit:contain;}
-.pdf-footer-note{font-size:13px;color:#888;margin-top:26px;clear:both;border-top:1px solid #eee;padding-top:10px;}
+.pdf-footer-note{font-size:13px;color:#888;margin-top:16px;clear:both;border-top:1px solid #eee;padding-top:8px;}
 </style>
 </head>
 <body>
