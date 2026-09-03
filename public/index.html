@@ -171,16 +171,26 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 
 /* Flags & Issues tab: every tagged note across every bill in one place */
 .stat-strip .stat .val.warn{color:var(--danger);}
-.issue-row{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+.issue-row{display:flex;align-items:flex-start;gap:14px;padding:12px 10px;border-bottom:1px solid var(--border);border-left:3px solid transparent;border-radius:4px;}
 .issue-row:last-child{border-bottom:none;}
 .issue-row.resolved{opacity:.6;}
+.issue-row.important{border-left-color:var(--warn);background:var(--warn-light);}
 .issue-row .issue-main{flex:1;min-width:0;}
-.issue-row .issue-period{font-size:12px;font-weight:700;color:var(--accent-dark);text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:none;padding:0;margin-bottom:5px;display:block;}
+.issue-row .issue-toprow{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.issue-row .issue-star{background:none;border:none;cursor:pointer;padding:0;font-size:16px;line-height:1;color:var(--muted-light);}
+.issue-row .issue-star.on{color:var(--warn);}
+.issue-row .issue-period{font-size:12px;font-weight:700;color:var(--accent-dark);text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:none;padding:0;}
 .issue-row .issue-period:hover{color:var(--ink);}
 .issue-row .issue-text{font-size:13.5px;line-height:1.5;}
 .issue-row.resolved .issue-text{text-decoration:line-through;color:var(--muted);}
+.issue-important-badge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.02em;background:var(--warn);color:#fff;margin-right:2px;}
 .issue-row .issue-pills{margin-top:7px;display:flex;gap:5px;flex-wrap:wrap;}
 .issue-row .issue-actions{flex:none;display:flex;gap:8px;align-items:center;padding-top:1px;}
+.issue-row.editing{align-items:stretch;}
+.issue-edit-text{width:100%;font-family:inherit;font-size:13.5px;padding:7px 9px;border-radius:6px;border:1px solid var(--border);resize:vertical;}
+.issue-edit-types{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;}
+.issue-edit-types label{display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:600;}
+.issue-edit-important{color:var(--warn);}
 #resolvedIssuesDetails summary{margin-bottom:0;}
 #resolvedIssuesDetails summary::-webkit-details-marker{color:var(--muted);}
 .note-editor .entry-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
@@ -520,7 +530,7 @@ table.bills-table .row-actions a.del{color:var(--danger);}
   <div class="stat-strip" id="issuesStatStrip"></div>
   <div class="card">
     <h2 style="margin:0 0 4px;">Flags &amp; issues</h2>
-    <p class="small-note">Every tagged note across every bill, pulled into one place so nothing needing a look gets buried in a specific billing period. Yardi-tagged items are the ones most likely to need actual bookkeeping follow-up. Resolve an item once it's taken care of — it moves into the archive below instead of just disappearing. Delete removes a note permanently; either way, the bill's own numbers are untouched.</p>
+    <p class="small-note">Every tagged note across every bill, pulled into one place so nothing needing a look gets buried in a specific billing period. Yardi-tagged items are the ones most likely to need actual bookkeeping follow-up. Star ☆ an item to mark it important/needs action — it's highlighted and sorted to the top. Edit lets you fix the text or tags right here. Resolve moves an item into the archive below once it's taken care of instead of just disappearing; Delete removes a note permanently. None of this touches the bill's own dollar figures.</p>
     <div class="note-tag-filter" style="margin-top:8px;">
       <span>Show:</span>
       <label><input type="checkbox" class="issue-tag-cb" data-type="estimateNote" checked> <span class="type-pill estimateNote">Estimate</span></label>
@@ -965,7 +975,7 @@ function renderNoteEntryEditor(){
   } else {
     wrap.innerHTML = b.noteEntries.map((entry, i)=>`
       <div class="entry-row" data-i="${i}">
-        <div class="entry-text">${escapeHtml(entry.text)}${entry.resolved?' <span class="type-pill" style="background:var(--accent-light);color:var(--accent-dark);">Resolved</span>':''}</div>
+        <div class="entry-text">${escapeHtml(entry.text)}${entry.important?' <span class="type-pill" style="background:var(--warn);color:#fff;">Important</span>':''}${entry.resolved?' <span class="type-pill" style="background:var(--accent-light);color:var(--accent-dark);">Resolved</span>':''}</div>
         <div class="entry-types">
           ${NOTE_TYPES.map(t=>`<label><input type="checkbox" class="entry-type-cb" data-i="${i}" data-type="${t}" ${entry.types.includes(t)?'checked':''}> ${NOTE_TYPE_LABELS[t]}</label>`).join('')}
         </div>
@@ -1463,6 +1473,13 @@ document.querySelectorAll('.note-tag-cb').forEach(cb=>{
 // someone could reasonably want e.g. only Yardi notes on this tab while
 // still seeing everything on All Bills.
 let issueTagFilter = {estimateNote:true, billingNote:true, yardiNote:true};
+// Key of the single issue row currently in inline-edit mode ("<billId>:<i>"),
+// or null when nothing is being edited. Only one row edits at a time -- an
+// in-progress edit isn't saved anywhere until Save is clicked, same as the
+// Split tab's own note editor not persisting until "Save bill", so
+// switching the tag filter or acting on another row mid-edit discards it.
+let editingIssueKey = null;
+function issueKey(billId, i){ return billId+':'+i; }
 function allIssueEntries(){
   const out = [];
   STATE.bills.forEach(b=>{
@@ -1470,15 +1487,40 @@ function allIssueEntries(){
   });
   return out;
 }
+function issueEditFormHtml(item){
+  const b = item.bill, e = item.entry;
+  return `<div class="issue-row editing">
+    <div class="issue-main">
+      <div class="issue-toprow">
+        <button class="issue-period open-bill" data-id="${b.id}">${fmtDateShort(b.periodStart)} – ${fmtDateShort(b.periodEnd)}</button>
+      </div>
+      <textarea class="issue-edit-text" rows="2">${escapeHtml(e.text)}</textarea>
+      <div class="issue-edit-types">
+        ${NOTE_TYPES.map(t=>`<label><input type="checkbox" class="issue-edit-type-cb" data-type="${t}" ${e.types.includes(t)?'checked':''}> ${NOTE_TYPE_LABELS[t]}</label>`).join('')}
+        <label class="issue-edit-important"><input type="checkbox" class="issue-edit-important-cb" ${e.important?'checked':''}> ⚠ Important / needs action</label>
+      </div>
+    </div>
+    <div class="issue-actions">
+      <button class="small primary issue-save" data-bill="${b.id}" data-i="${item.index}">Save</button>
+      <button class="small issue-cancel-edit">Cancel</button>
+    </div>
+  </div>`;
+}
 function issueRowHtml(item, resolved){
   const b = item.bill, e = item.entry;
-  return `<div class="issue-row${resolved?' resolved':''}">
+  if(editingIssueKey === issueKey(b.id, item.index)) return issueEditFormHtml(item);
+  const important = !!e.important;
+  return `<div class="issue-row${resolved?' resolved':''}${important?' important':''}">
     <div class="issue-main">
-      <button class="issue-period open-bill" data-id="${b.id}">${fmtDateShort(b.periodStart)} – ${fmtDateShort(b.periodEnd)}</button>
-      <div class="issue-text">${escapeHtml(e.text)}</div>
+      <div class="issue-toprow">
+        <button class="issue-star${important?' on':''}" data-bill="${b.id}" data-i="${item.index}" title="${important?'Unmark important':'Mark important — needs action'}">${important?'★':'☆'}</button>
+        <button class="issue-period open-bill" data-id="${b.id}">${fmtDateShort(b.periodStart)} – ${fmtDateShort(b.periodEnd)}</button>
+      </div>
+      <div class="issue-text">${important?'<span class="issue-important-badge">Needs action</span> ':''}${escapeHtml(e.text)}</div>
       <div class="issue-pills">${noteEntryPillsHtml(e)}</div>
     </div>
     <div class="issue-actions">
+      <button class="small issue-edit" data-bill="${b.id}" data-i="${item.index}">Edit</button>
       <button class="small issue-resolve-toggle" data-bill="${b.id}" data-i="${item.index}">${resolved?'Unresolve':'Resolve'}</button>
       <button class="small danger issue-delete" data-bill="${b.id}" data-i="${item.index}">Delete</button>
     </div>
@@ -1490,12 +1532,20 @@ function renderIssuesTab(){
   // shown if any one of its tags is currently checked.
   const all = allIssueEntries().filter(it=> it.entry.types.length===0 || it.entry.types.some(t=>issueTagFilter[t]));
   const byRecency = (a,b)=> cmpDate(b.bill.periodEnd, a.bill.periodEnd);
-  const open = all.filter(it=>!it.entry.resolved).sort(byRecency);
+  // Open items marked important float to the top (most-recent-first within
+  // each group) -- resolved items stay in plain recency order since once
+  // something's archived, "important" is a historical note, not a queue.
+  const open = all.filter(it=>!it.entry.resolved).sort((a,b)=>{
+    const ai = a.entry.important?1:0, bi = b.entry.important?1:0;
+    return ai!==bi ? bi-ai : byRecency(a,b);
+  });
   const resolved = all.filter(it=>it.entry.resolved).sort(byRecency);
   const yardiOpen = open.filter(it=>it.entry.types.includes('yardiNote')).length;
+  const importantOpen = open.filter(it=>it.entry.important).length;
 
   document.getElementById('issuesStatStrip').innerHTML = `
     <div class="stat"><div class="lbl">Open issues</div><div class="val">${open.length}</div></div>
+    <div class="stat"><div class="lbl">Needs action</div><div class="val${importantOpen?' warn':''}">${importantOpen}</div></div>
     <div class="stat"><div class="lbl">Yardi issues open</div><div class="val${yardiOpen?' warn':''}">${yardiOpen}</div></div>
     <div class="stat"><div class="lbl">Resolved</div><div class="val">${resolved.length}</div></div>
   `;
@@ -1511,11 +1561,28 @@ function renderIssuesTab(){
   document.querySelectorAll('#tab-issues .open-bill').forEach(btn=>{
     btn.addEventListener('click', ()=> openBillInSplitTab(btn.dataset.id));
   });
+  document.querySelectorAll('#tab-issues .issue-star').forEach(btn=>{
+    btn.addEventListener('click', ()=> toggleIssueImportant(btn.dataset.bill, parseInt(btn.dataset.i,10)));
+  });
   document.querySelectorAll('#tab-issues .issue-resolve-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=> toggleIssueResolved(btn.dataset.bill, parseInt(btn.dataset.i,10)));
   });
   document.querySelectorAll('#tab-issues .issue-delete').forEach(btn=>{
     btn.addEventListener('click', ()=> deleteIssue(btn.dataset.bill, parseInt(btn.dataset.i,10)));
+  });
+  document.querySelectorAll('#tab-issues .issue-edit').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      editingIssueKey = issueKey(btn.dataset.bill, parseInt(btn.dataset.i,10));
+      renderIssuesTab();
+      const ta = document.querySelector('#tab-issues .issue-edit-text');
+      if(ta){ ta.focus(); ta.selectionStart = ta.selectionEnd = ta.value.length; }
+    });
+  });
+  document.querySelectorAll('#tab-issues .issue-cancel-edit').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingIssueKey = null; renderIssuesTab(); });
+  });
+  document.querySelectorAll('#tab-issues .issue-save').forEach(btn=>{
+    btn.addEventListener('click', ()=> saveIssueEdit(btn.dataset.bill, parseInt(btn.dataset.i,10), btn.closest('.issue-row')));
   });
 }
 document.querySelectorAll('.issue-tag-cb').forEach(cb=>{
@@ -1525,13 +1592,30 @@ document.querySelectorAll('.issue-tag-cb').forEach(cb=>{
   });
 });
 // If the bill this entry belongs to is also the one currently loaded in
-// the Split-a-bill editor, keeps that editor's note list from going stale
-// -- draftBill is a deep copy (see startDraftFromBill), so a mutation to
-// the STATE.bills row here doesn't reach it on its own.
+// the Split-a-bill editor, keeps that editor from going stale -- draftBill
+// is a deep copy (see startDraftFromBill), so a mutation to the
+// STATE.bills row here doesn't reach it on its own.
 function syncDraftNoteEntriesIfLoaded(bill){
   if(draftBillId===bill.id){
     draftBill.noteEntries = JSON.parse(JSON.stringify(bill.noteEntries||[]));
+    draftBill.estimated = bill.estimated;
+    document.getElementById('fEstimated').checked = !!bill.estimated;
     renderNoteEntryEditor();
+  }
+}
+async function toggleIssueImportant(billId, i){
+  const b = billById(billId);
+  const entry = b && b.noteEntries && b.noteEntries[i];
+  if(!entry) return;
+  entry.important = !entry.important;
+  renderIssuesTab();
+  syncDraftNoteEntriesIfLoaded(b);
+  try{ await updateBillApi(b); persistOk(); }
+  catch(e){
+    entry.important = !entry.important; // roll back the optimistic flip
+    persistFail(e);
+    renderIssuesTab();
+    syncDraftNoteEntriesIfLoaded(b);
   }
 }
 async function toggleIssueResolved(billId, i){
@@ -1544,6 +1628,34 @@ async function toggleIssueResolved(billId, i){
   try{ await updateBillApi(b); persistOk(); }
   catch(e){
     entry.resolved = !entry.resolved; // roll back the optimistic flip
+    persistFail(e);
+    renderIssuesTab();
+    syncDraftNoteEntriesIfLoaded(b);
+  }
+}
+// Edits an entry's text/types/important in place. Mirrors the one
+// invalid-direction rule the Split tab's own editor enforces (see
+// syncEstimatedFromNotes): an entry can't end up tagged estimateNote while
+// its bill's estimated flag is false, so adding that tag here also flips
+// estimated on -- same rule, just applied at the point this editor changes
+// types directly instead of through the bill-editor's own checkbox.
+async function saveIssueEdit(billId, i, rowEl){
+  const b = billById(billId);
+  const entry = b && b.noteEntries && b.noteEntries[i];
+  if(!entry || !rowEl) return;
+  const text = rowEl.querySelector('.issue-edit-text').value.trim();
+  if(!text){ showToast("Note text can't be empty — delete it instead if you want it gone."); return; }
+  const types = Array.from(rowEl.querySelectorAll('.issue-edit-type-cb')).filter(cb=>cb.checked).map(cb=>cb.dataset.type);
+  const important = rowEl.querySelector('.issue-edit-important-cb').checked;
+  const prev = {text: entry.text, types: entry.types, important: entry.important, estimated: b.estimated};
+  entry.text = text; entry.types = types; entry.important = important;
+  if(types.includes('estimateNote')) b.estimated = true;
+  editingIssueKey = null;
+  renderIssuesTab();
+  syncDraftNoteEntriesIfLoaded(b);
+  try{ await updateBillApi(b); persistOk(); }
+  catch(e){
+    entry.text = prev.text; entry.types = prev.types; entry.important = prev.important; b.estimated = prev.estimated;
     persistFail(e);
     renderIssuesTab();
     syncDraftNoteEntriesIfLoaded(b);
