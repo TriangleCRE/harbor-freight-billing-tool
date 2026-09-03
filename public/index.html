@@ -533,9 +533,9 @@ table.bills-table .row-actions a.del{color:var(--danger);}
   <div class="card">
     <div class="row between wrap">
       <div class="eyebrow">Tenant statements</div>
-      <button class="small primary" id="genAllStmt">Generate all tenants (one PDF, one per page)</button>
+      <button class="small primary" id="genAllStmt">Generate all tenants (separate PDF per tenant)</button>
     </div>
-    <p class="small-note">A statement gathers every <b>unpaid</b> bill for a tenant (anything not marked Paid) into one PDF with a running total. Bills you mark Paid drop off automatically.</p>
+    <p class="small-note">A statement gathers every <b>unpaid</b> bill for a tenant (anything not marked Paid) into one PDF with a running total. Bills you mark Paid drop off automatically. "Generate all tenants" opens one Save-as-PDF prompt per tenant, one after another, each pre-named "<i>Tenant</i> - Water &amp; FM Statement - <i>Mon Year</i>".</p>
     <div class="hr"></div>
     <table class="data greenhead">
       <thead><tr><th>Tenant</th><th class="num">Outstanding bills</th><th class="num">Total owed</th><th></th></tr></thead>
@@ -1561,7 +1561,7 @@ function renderStatementRoster(){
   }).join('');
   tbody.querySelectorAll('.gen-stmt').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      printHtml(consolidatedStatementHtml(tenantById(btn.dataset.id)));
+      printOneStatement(tenantById(btn.dataset.id));
     });
   });
 }
@@ -1569,16 +1569,52 @@ function renderStatementsTab(){
   renderTenantRoster();
   renderStatementRoster();
 }
-// One PDF, one statement page per tenant -- same content as clicking
-// "Statement PDF" on every roster row individually, just batched. Includes
-// every tenant (even ones with no open balance right now, shown as "No
-// open balances" on their page) so the output is a consistent full mailing
-// packet rather than a variable subset.
-function allStatementsHtml(){
-  return STATE.tenants.map(t=>consolidatedStatementHtml(t)).join('');
+
+// The page's own <title> is what a browser's print -> Save as PDF dialog
+// suggests as the default filename -- there's no other hook a plain
+// window.print() flow has for naming a saved file. Captured once here
+// (before anything below ever changes it) so it can be restored after a
+// statement print job.
+const APP_TITLE = document.title;
+// "<Tenant name> - Water & FM Statement - <Mon Year>", e.g.
+// "Harbor Freight Tools #527 - Water & FM Statement - Sep 2026" -- the
+// naming convention Sarah uses for these when sending them on.
+function statementFilename(tenant){
+  const d = new Date();
+  return `${tenant.name} - Water & FM Statement - ${d.toLocaleDateString('en-US',{month:'short'})} ${d.getFullYear()}`;
+}
+function printOneStatement(tenant){
+  document.title = statementFilename(tenant);
+  printHtml(consolidatedStatementHtml(tenant));
+}
+// Restore the app's real title once the print dialog closes (Saved or
+// Cancelled) -- otherwise the tab/window title would stay stuck on
+// whichever tenant was printed last.
+window.addEventListener('afterprint', ()=>{
+  if(statementPrintQueue.length){ setTimeout(printNextQueuedStatement, 400); }
+  else { document.title = APP_TITLE; }
+});
+
+// "Generate all tenants" used to concatenate every tenant onto one PDF (one
+// page per tenant, one Save-as-PDF prompt total). Sarah asked for that as
+// separate PDF files instead -- a browser's print flow can only ever save
+// one file per window.print() call, so separate *files* means separate
+// print jobs, one per tenant, each with its own filename via
+// statementFilename() above. This queue fires them one after another
+// automatically (advancing on 'afterprint', which fires whether that
+// tenant's dialog was Saved or Cancelled) so the button still only takes
+// one click -- it just produces a run of N "Save as PDF" prompts instead
+// of one, since that per-file confirmation is the browser's, not this
+// app's, and there's no way around it without giving up real, selectable
+// PDF text for a rasterized image-based export instead.
+let statementPrintQueue = [];
+function printNextQueuedStatement(){
+  const tenant = statementPrintQueue.shift();
+  if(tenant) printOneStatement(tenant);
 }
 document.getElementById('genAllStmt').addEventListener('click', ()=>{
-  printHtml(allStatementsHtml());
+  statementPrintQueue = STATE.tenants.slice();
+  printNextQueuedStatement();
 });
 
 /* ---------- AI Import panel ---------- */
