@@ -168,6 +168,21 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 .note-entry .note-pills{display:flex;gap:4px;flex:none;}
 .note-tag-filter{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);}
 .note-tag-filter label{display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:600;}
+
+/* Flags & Issues tab: every tagged note across every bill in one place */
+.stat-strip .stat .val.warn{color:var(--danger);}
+.issue-row{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+.issue-row:last-child{border-bottom:none;}
+.issue-row.resolved{opacity:.6;}
+.issue-row .issue-main{flex:1;min-width:0;}
+.issue-row .issue-period{font-size:12px;font-weight:700;color:var(--accent-dark);text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:none;padding:0;margin-bottom:5px;display:block;}
+.issue-row .issue-period:hover{color:var(--ink);}
+.issue-row .issue-text{font-size:13.5px;line-height:1.5;}
+.issue-row.resolved .issue-text{text-decoration:line-through;color:var(--muted);}
+.issue-row .issue-pills{margin-top:7px;display:flex;gap:5px;flex-wrap:wrap;}
+.issue-row .issue-actions{flex:none;display:flex;gap:8px;align-items:center;padding-top:1px;}
+#resolvedIssuesDetails summary{margin-bottom:0;}
+#resolvedIssuesDetails summary::-webkit-details-marker{color:var(--muted);}
 .note-editor .entry-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
 .note-editor .entry-row:last-child{border-bottom:none;}
 .note-editor .entry-text{flex:1;font-size:13px;padding:2px 0;}
@@ -312,6 +327,7 @@ table.bills-table .row-actions a.del{color:var(--danger);}
 <nav class="tabs no-print">
   <button data-tab="split" class="active">Split a bill</button>
   <button data-tab="all">All bills</button>
+  <button data-tab="issues">Flags &amp; issues</button>
   <button data-tab="readings">Readings log</button>
   <button data-tab="statements">Tenant statements</button>
 </nav>
@@ -496,6 +512,30 @@ table.bills-table .row-actions a.del{color:var(--danger);}
       </thead>
       <tbody id="allBillsTbody"></tbody>
     </table>
+  </div>
+</div>
+
+<!-- ============ FLAGS & ISSUES ============ -->
+<div class="tab-panel" id="tab-issues">
+  <div class="stat-strip" id="issuesStatStrip"></div>
+  <div class="card">
+    <h2 style="margin:0 0 4px;">Flags &amp; issues</h2>
+    <p class="small-note">Every tagged note across every bill, pulled into one place so nothing needing a look gets buried in a specific billing period. Yardi-tagged items are the ones most likely to need actual bookkeeping follow-up. Resolve an item once it's taken care of — it moves into the archive below instead of just disappearing. Delete removes a note permanently; either way, the bill's own numbers are untouched.</p>
+    <div class="note-tag-filter" style="margin-top:8px;">
+      <span>Show:</span>
+      <label><input type="checkbox" class="issue-tag-cb" data-type="estimateNote" checked> <span class="type-pill estimateNote">Estimate</span></label>
+      <label><input type="checkbox" class="issue-tag-cb" data-type="billingNote" checked> <span class="type-pill billingNote">Billing</span></label>
+      <label><input type="checkbox" class="issue-tag-cb" data-type="yardiNote" checked> <span class="type-pill yardiNote">Yardi</span></label>
+    </div>
+    <div class="hr"></div>
+    <div id="openIssuesList"></div>
+    <p class="small-note" id="noOpenIssuesMsg" style="display:none;">No open issues under the current filter.</p>
+  </div>
+  <div class="card">
+    <details id="resolvedIssuesDetails">
+      <summary class="eyebrow" style="cursor:pointer;">Resolved (<span id="resolvedCount">0</span>)</summary>
+      <div id="resolvedIssuesList" style="margin-top:12px;"></div>
+    </details>
   </div>
 </div>
 
@@ -846,6 +886,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
     document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
     STATE.meta.lastOpenTab = btn.dataset.tab;
     if(btn.dataset.tab==='all') renderAllBills();
+    if(btn.dataset.tab==='issues') renderIssuesTab();
     if(btn.dataset.tab==='readings') renderReadingsTab();
     if(btn.dataset.tab==='statements') renderStatementsTab();
   });
@@ -924,7 +965,7 @@ function renderNoteEntryEditor(){
   } else {
     wrap.innerHTML = b.noteEntries.map((entry, i)=>`
       <div class="entry-row" data-i="${i}">
-        <div class="entry-text">${escapeHtml(entry.text)}</div>
+        <div class="entry-text">${escapeHtml(entry.text)}${entry.resolved?' <span class="type-pill" style="background:var(--accent-light);color:var(--accent-dark);">Resolved</span>':''}</div>
         <div class="entry-types">
           ${NOTE_TYPES.map(t=>`<label><input type="checkbox" class="entry-type-cb" data-i="${i}" data-type="${t}" ${entry.types.includes(t)?'checked':''}> ${NOTE_TYPE_LABELS[t]}</label>`).join('')}
         </div>
@@ -1414,6 +1455,116 @@ document.querySelectorAll('.note-tag-cb').forEach(cb=>{
   });
 });
 
+/* ---------- FLAGS & ISSUES tab ---------- */
+// Every noteEntries item on every bill, flattened with a back-reference to
+// its bill -- this is the one place in the app that looks across all bills
+// at once instead of one bill at a time. Which tag types are shown here has
+// its own filter state (issueTagFilter), independent of All Bills' --
+// someone could reasonably want e.g. only Yardi notes on this tab while
+// still seeing everything on All Bills.
+let issueTagFilter = {estimateNote:true, billingNote:true, yardiNote:true};
+function allIssueEntries(){
+  const out = [];
+  STATE.bills.forEach(b=>{
+    (b.noteEntries||[]).forEach((entry, i)=>{ out.push({bill:b, entry, index:i}); });
+  });
+  return out;
+}
+function issueRowHtml(item, resolved){
+  const b = item.bill, e = item.entry;
+  return `<div class="issue-row${resolved?' resolved':''}">
+    <div class="issue-main">
+      <button class="issue-period open-bill" data-id="${b.id}">${fmtDateShort(b.periodStart)} – ${fmtDateShort(b.periodEnd)}</button>
+      <div class="issue-text">${escapeHtml(e.text)}</div>
+      <div class="issue-pills">${noteEntryPillsHtml(e)}</div>
+    </div>
+    <div class="issue-actions">
+      <button class="small issue-resolve-toggle" data-bill="${b.id}" data-i="${item.index}">${resolved?'Unresolve':'Resolve'}</button>
+      <button class="small danger issue-delete" data-bill="${b.id}" data-i="${item.index}">Delete</button>
+    </div>
+  </div>`;
+}
+function renderIssuesTab(){
+  // Same per-entry filtering rule as All Bills: an entry with no tags at
+  // all is always shown (nothing to filter it on), an entry with tags is
+  // shown if any one of its tags is currently checked.
+  const all = allIssueEntries().filter(it=> it.entry.types.length===0 || it.entry.types.some(t=>issueTagFilter[t]));
+  const byRecency = (a,b)=> cmpDate(b.bill.periodEnd, a.bill.periodEnd);
+  const open = all.filter(it=>!it.entry.resolved).sort(byRecency);
+  const resolved = all.filter(it=>it.entry.resolved).sort(byRecency);
+  const yardiOpen = open.filter(it=>it.entry.types.includes('yardiNote')).length;
+
+  document.getElementById('issuesStatStrip').innerHTML = `
+    <div class="stat"><div class="lbl">Open issues</div><div class="val">${open.length}</div></div>
+    <div class="stat"><div class="lbl">Yardi issues open</div><div class="val${yardiOpen?' warn':''}">${yardiOpen}</div></div>
+    <div class="stat"><div class="lbl">Resolved</div><div class="val">${resolved.length}</div></div>
+  `;
+
+  document.getElementById('openIssuesList').innerHTML = open.map(it=>issueRowHtml(it,false)).join('');
+  document.getElementById('noOpenIssuesMsg').style.display = open.length ? 'none' : '';
+
+  document.getElementById('resolvedCount').textContent = resolved.length;
+  document.getElementById('resolvedIssuesList').innerHTML = resolved.length
+    ? resolved.map(it=>issueRowHtml(it,true)).join('')
+    : '<p class="small-note">Nothing resolved yet.</p>';
+
+  document.querySelectorAll('#tab-issues .open-bill').forEach(btn=>{
+    btn.addEventListener('click', ()=> openBillInSplitTab(btn.dataset.id));
+  });
+  document.querySelectorAll('#tab-issues .issue-resolve-toggle').forEach(btn=>{
+    btn.addEventListener('click', ()=> toggleIssueResolved(btn.dataset.bill, parseInt(btn.dataset.i,10)));
+  });
+  document.querySelectorAll('#tab-issues .issue-delete').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteIssue(btn.dataset.bill, parseInt(btn.dataset.i,10)));
+  });
+}
+document.querySelectorAll('.issue-tag-cb').forEach(cb=>{
+  cb.addEventListener('change', ()=>{
+    issueTagFilter[cb.dataset.type] = cb.checked;
+    renderIssuesTab();
+  });
+});
+// If the bill this entry belongs to is also the one currently loaded in
+// the Split-a-bill editor, keeps that editor's note list from going stale
+// -- draftBill is a deep copy (see startDraftFromBill), so a mutation to
+// the STATE.bills row here doesn't reach it on its own.
+function syncDraftNoteEntriesIfLoaded(bill){
+  if(draftBillId===bill.id){
+    draftBill.noteEntries = JSON.parse(JSON.stringify(bill.noteEntries||[]));
+    renderNoteEntryEditor();
+  }
+}
+async function toggleIssueResolved(billId, i){
+  const b = billById(billId);
+  const entry = b && b.noteEntries && b.noteEntries[i];
+  if(!entry) return;
+  entry.resolved = !entry.resolved;
+  renderIssuesTab();
+  syncDraftNoteEntriesIfLoaded(b);
+  try{ await updateBillApi(b); persistOk(); }
+  catch(e){
+    entry.resolved = !entry.resolved; // roll back the optimistic flip
+    persistFail(e);
+    renderIssuesTab();
+    syncDraftNoteEntriesIfLoaded(b);
+  }
+}
+async function deleteIssue(billId, i){
+  const b = billById(billId);
+  const entry = b && b.noteEntries && b.noteEntries[i];
+  if(!entry) return;
+  if(!confirm('Delete this note permanently? This cannot be undone.')) return;
+  b.noteEntries.splice(i, 1);
+  renderIssuesTab();
+  syncDraftNoteEntriesIfLoaded(b);
+  try{ await updateBillApi(b); persistOk(); }
+  catch(e){
+    persistFail(e);
+    showToast('Could not delete on the server — reloading data.');
+    await loadStateFromServer(); renderEverything();
+  }
+}
+
 /* ---------- READINGS LOG tab ---------- */
 function renderAddReadingGrid(){
   const grid = document.getElementById('addReadingGrid');
@@ -1800,6 +1951,7 @@ function renderEverything(){
   if(sorted.length) startDraftFromBill(sorted[0]); else startNewDraft();
   loadDraftIntoForm();
   renderAllBills();
+  renderIssuesTab();
   renderReadingsTab();
   renderStatementsTab();
 }
